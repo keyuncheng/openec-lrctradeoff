@@ -61,19 +61,11 @@ try:
         model.addGenConstrIndicator(I_b[rack_id], True, x[rack_id] >= 1)
         model.addGenConstrIndicator(I_b[rack_id], False, x[rack_id] == 0)
 
-    # TODO: fix for maintenance
     ################# No need for repair (start)
-    # # I_l(i): Indicator variable that whether the data blocks in j-th local
-    # # group can be locally repaired in the i-th rack
-    # I_l = model.addVars(max_num_racks, ecl, vtype=GRB.BINARY, name="I_l")
-    # for rack_id in range(max_num_racks):
-    #     for lg_id in range(ecl):
-    #         model.addGenConstrIndicator(I_l[rack_id, lg_id], True, a[rack_id, lg_id] == 1)
-    #         model.addGenConstrIndicator(I_l[rack_id, lg_id], True, b[rack_id, lg_id] == 0)
+    # Z: number of racks the entire stripe spans
+    Z = model.addVar(vtype=GRB.INTEGER, lb=0, ub=eck+ecl, name="Z")
+    model.addConstr(Z == I_b.sum('*'))
 
-    # # Z: number of racks the entire stripe spans
-    # Z = model.addVar(vtype=GRB.INTEGER, lb=0, ub=eck+ecl, name="Z")
-    # model.addConstr(Z == I_b.sum('*'))
     ################# No need for repair (end)
 
     # Constraint 3: each rack stores at most g+i blocks that spanned by i
@@ -87,65 +79,77 @@ try:
     #         model.addConstr(a[rack_id, lg_id] + b[rack_id, lg_id] <= g + 1)
 
 
-    # Optimization goal: minimize R (repair cost)
+    #####################################################################
+    # # Optimization goal: minimize R (repair cost)
 
-    # r_cost(j): repair cost for all data blocks from the j-th local group
-    r = model.addVars(ecl, vtype=GRB.INTEGER, lb=0, name="r")
-    for lg_id in range(ecl):
-        model.addConstr(r[lg_id] == ecb * (z[lg_id] - 1))
-    
-    R = model.addVar(vtype=GRB.INTEGER, lb=0, name="R")
-    R = 1.0 * r.sum('*') / eck
-
-    # Set objective
-    model.setObjective(R, GRB.MINIMIZE)
-
-
-
-    # # Optimization goal: minimize M (maintenance cost)
-    # # m_cost(i，j) maintenance cost for the data blocks from the j-th local
-    # # group in the i-th rack
-
-    # # m_cost_local(j): maintenance cost for the data blocks from the j-th
-    # # local group (local repair)
-    # m_cost_local = model.addVars(ecl, vtype=GRB.INTEGER, lb=0, name="m_cost_local")
+    # # r_cost(j): repair cost for all data blocks from the j-th local group
+    # r = model.addVars(ecl, vtype=GRB.INTEGER, lb=0, ub=eck, name="r")
     # for lg_id in range(ecl):
-    #     model.addConstr(m_cost_local[lg_id] == z[lg_id] - 2)
-
-    # # m_cost_global_tmp(i,j): tmp variable, representing the maintenance cost
-    # # to repair the j-th local group in the i-th rack
-    # m_cost_global_tmp = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, lb=0, name="m_cost_global_tmp")
-    # for rack_id in range(max_num_racks):
-    #     for lg_id in range(ecl):
-    #         model.addConstr(m_cost_global_tmp[rack_id, lg_id] == (1 - b[rack_id, lg_id]) * m_cost_local[lg_id] + (a[rack_id, lg_id] + b[rack_id, lg_id] - 1) * (Z - 2))
-
-    # # m_cost_global(i,j): maintenance cost for the data blocks from the j-th
-    # # local group in the i-th rack (global repair)
-    # m_cost_global = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, lb=0, name="m_cost_global")
-    # for rack_id in range(max_num_racks):
-    #     for lg_id in range(ecl):
-    #         model.addConstr(m_cost_global[rack_id, lg_id] == m_cost_global_tmp.sum('*', lg_id))
+    #     model.addConstr(r[lg_id] == ecb * (z[lg_id] - 1))
     
-    # # m_cost(i,j): maintenance cost for each of the data block from the j-th
-    # # local group in the i-th rack (mixing local and global repair)
-    # m_cost = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, lb=0, name="m_cost")
-    # for rack_id in range(max_num_racks):
-    #     for lg_id in range(ecl):
-    #         model.addConstr(m_cost[rack_id, lg_id] == (I_l[rack_id, lg_id] * m_cost_local[lg_id] + (1 - I_l[rack_id, lg_id]) *  m_cost_global[rack_id, lg_id]))
-
-    # # m_cost_sum(i,j): sum of maintenance costs for all the data blocks from
-    # # the j-th local group in the i-th rack 
-    # m_cost_sum = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, lb=0, name="m_cost")
-    # for rack_id in range(max_num_racks):
-    #     for lg_id in range(ecl):
-    #         model.addConstr(m_cost_sum[rack_id, lg_id] == a[rack_id, lg_id] * m_cost[rack_id, lg_id])
-
-    # # M: average maintenance cost of the LRC stripe
-    # M = model.addVar(vtype=GRB.INTEGER, lb=0, name="M")
-    # M = 1.0 * m_cost_sum.sum('*', '*') / eck
+    # R = model.addVar(vtype=GRB.INTEGER, lb=0, name="R")
+    # R = 1.0 * r.sum('*') / eck
 
     # # Set objective
-    # model.setObjective(M, GRB.MINIMIZE)
+    # model.setObjective(R, GRB.MINIMIZE)
+    #####################################################################
+
+
+    #####################################################################
+    # Optimization goal: minimize M (maintenance cost)
+    # m_cost(i，j) maintenance cost for the data blocks from the j-th local
+    # group in the i-th rack
+
+    # m_cost_global_tmp(i,j): tmp variable, representing the maintenance cost
+    # to repair the j-th local group in the i-th rack
+    m_cost_global_tmp = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, lb=0, ub=eck, name="m_cost_global_tmp")
+    for rack_id in range(max_num_racks):
+        for lg_id in range(ecl):
+            model.addConstr(m_cost_global_tmp[rack_id, lg_id] == (1 - b[rack_id, lg_id]) * (z[lg_id] - 2) + (a[rack_id, lg_id] + b[rack_id, lg_id] - 1) * (Z - 2))
+
+    # m_cost_global(i): maintenance cost for the data blocks in the i-th rack (global repair)
+    m_cost_global = model.addVars(max_num_racks, vtype=GRB.INTEGER, lb=0, ub=eck, name="m_cost_global")
+    for rack_id in range(max_num_racks):
+        model.addConstr(m_cost_global[rack_id] == m_cost_global_tmp.sum(rack_id, '*'))
+
+    # TODO fix bug here
+    # I_l(i): Indicator variable that whether the data blocks in j-th local
+    # group can be locally repaired in the i-th rack
+    I_l = model.addVars(max_num_racks, ecl, vtype=GRB.BINARY, name="I_l")
+    for rack_id in range(max_num_racks):
+        for lg_id in range(ecl):
+            model.addGenConstrIndicator(I_l[rack_id, lg_id], True, a[rack_id, lg_id] + b[rack_id, lg_id] == 1)
+            model.addGenConstrIndicator(I_l[rack_id, lg_id], False, a[rack_id, lg_id] + b[rack_id, lg_id] >= 2)
+    
+    # m_cost(i,j): maintenance cost for each of the data block from the j-th
+    # local group in the i-th rack (mixing local and global repair)
+    m_cost = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, lb=0, name="m_cost")
+    for rack_id in range(max_num_racks):
+        for lg_id in range(ecl):
+            # model.addConstr(m_cost[rack_id, lg_id] == (I_l[rack_id, lg_id] *
+            # (z[lg_id] - 2) + (1 - I_l[rack_id, lg_id]) *
+            # m_cost_global[rack_id]))
+
+            model.addConstr(m_cost[rack_id, lg_id] == I_l[rack_id, lg_id] * (z[lg_id] - 2))
+            # model.addConstr(m_cost[rack_id, lg_id] == m_cost_global[rack_id])
+
+    # m_cost_sum(i,j): sum of maintenance costs for all the data blocks from the j-th local group in the i-th rack 
+    m_cost_sum = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, lb=0, name="m_cost")
+    for rack_id in range(max_num_racks):
+        for lg_id in range(ecl):
+            model.addConstr(m_cost_sum[rack_id, lg_id] == a[rack_id, lg_id] * m_cost[rack_id, lg_id])
+
+    # M: average maintenance cost of the LRC stripe
+    M = model.addVar(vtype=GRB.INTEGER, lb=0, name="M")
+    model.addConstr(M == m_cost_sum.sum('*', '*') / eck)
+
+    # M = gp.quicksum(a[rack_id, lg_id] * m_cost[rack_id, lg_id] for rack_id in range(max_num_racks) for lg_id in range(ecl)) / eck
+    # M = 1.0 * m_cost.sum('*', '*') / eck
+
+    # Set objective
+    model.setObjective(M, GRB.MINIMIZE)
+    #####################################################################
+
 
     # Optimize model
     model.optimize()
