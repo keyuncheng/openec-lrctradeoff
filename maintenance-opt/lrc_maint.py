@@ -29,6 +29,18 @@ try:
     # is only one local parity block in each local group
     b = model.addVars(max_num_racks, ecl, vtype=GRB.BINARY, name="b")
 
+    # TODO: bug fix for initial solution
+    # Setting an initial solution (for a, b)
+    for lg_id in range(ecl):
+        for rack_id in range(max_num_racks):
+            a[rack_id, lg_id].Start = 0
+            b[ecb, lg_id].Start = 0
+
+    for lg_id in range(ecl):
+        for rack_id in range(ecb):
+            a[rack_id, lg_id].Start = 1
+        b[ecb, lg_id].Start = 1
+
     # Constraint 1: there are a total of b data blocks in each local group
     for lg_id in range(ecl):
         model.addConstr(a.sum('*', lg_id) == ecb)
