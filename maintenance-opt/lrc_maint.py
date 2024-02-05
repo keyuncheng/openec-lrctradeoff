@@ -3,8 +3,8 @@ import numpy as np
 import gurobipy as gp
 from gurobipy import GRB
 
-eck = 10
-ecl = 2
+eck = 20
+ecl = 4
 ecg = 2
 ecn = eck + ecl + ecg
 ecb = int(eck / ecl)
@@ -118,7 +118,7 @@ try:
     for rack_id in range(max_num_racks):
         for lg_id in range(ecl):
             model.addGenConstrIndicator(I_a[rack_id, lg_id], True, a[rack_id, lg_id] >= 1)
-            model.addGenConstrIndicator(I_a[rack_id, lg_id], False, a[rack_id, lg_id] + b[rack_id, lg_id] == 0)
+            model.addGenConstrIndicator(I_a[rack_id, lg_id], False, a[rack_id, lg_id] == 0)
 
     # m_cost_global_tmp(i,j): tmp variable, representing the maintenance cost
     # to repair the j-th local group in the i-th rack
@@ -157,13 +157,13 @@ try:
     M = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=eck, name="M")
     model.addConstr(M == m_cost_sum.sum('*', '*') / eck)
 
-    # M: average maintenance cost of the LRC stripe (integer)
+    # # M: average maintenance cost of the LRC stripe (integer)
     # M = model.addVar(vtype=GRB.INTEGER, lb=0, ub=eck * eck, name="M")
     # model.addConstr(M == m_cost_sum.sum('*', '*'))
 
-
     # Set objective
     model.setObjective(M, GRB.MINIMIZE)
+
     #####################################################################
 
 
