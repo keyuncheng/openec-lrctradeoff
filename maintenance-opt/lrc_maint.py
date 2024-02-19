@@ -3,8 +3,8 @@ import numpy as np
 import gurobipy as gp
 from gurobipy import GRB
 
-eck = 20
-ecl = 4
+eck = 10
+ecl = 2
 ecg = 2
 ecn = eck + ecl + ecg
 ecb = int(eck / ecl)
@@ -125,7 +125,7 @@ try:
     m_cost_global_tmp = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, lb=0, ub=eck, name="m_cost_global_tmp")
     for rack_id in range(max_num_racks):
         for lg_id in range(ecl):
-            model.addConstr(m_cost_global_tmp[rack_id, lg_id] == (1 - b[rack_id, lg_id]) * (z[lg_id] - 2) + (a[rack_id, lg_id] + b[rack_id, lg_id] - I_a[rack_id, lg_id]) * (Z - 2))
+            model.addConstr(m_cost_global_tmp[rack_id, lg_id] == (1 - b[rack_id, lg_id]) * (z[lg_id] - 1) + (a[rack_id, lg_id] + b[rack_id, lg_id] - I_a[rack_id, lg_id]) * (Z - 1))
 
     # m_cost_global(i): maintenance cost for the data blocks in the i-th rack (global repair)
     m_cost_global = model.addVars(max_num_racks, vtype=GRB.INTEGER, lb=0, ub=eck, name="m_cost_global")
@@ -145,7 +145,7 @@ try:
     m_cost = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, lb=0, ub=eck, name="m_cost")
     for rack_id in range(max_num_racks):
         for lg_id in range(ecl):
-            model.addConstr(m_cost[rack_id, lg_id] == (I_l[rack_id, lg_id] * (z[lg_id] - 2) + (1 - I_l[rack_id, lg_id]) * m_cost_global[rack_id]))
+            model.addConstr(m_cost[rack_id, lg_id] == (I_l[rack_id, lg_id] * (z[lg_id] - 1) + (1 - I_l[rack_id, lg_id]) * m_cost_global[rack_id]))
 
     # m_cost_sum(i,j): sum of maintenance costs for all the data blocks from the j-th local group in the i-th rack 
     m_cost_sum = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, lb=0, ub=eck, name="m_cost_sum")
@@ -165,7 +165,6 @@ try:
     model.setObjective(M, GRB.MINIMIZE)
 
     #####################################################################
-
 
     # Optimize model
     model.optimize()
