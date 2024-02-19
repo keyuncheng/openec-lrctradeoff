@@ -99,8 +99,9 @@ try:
     # for lg_id in range(ecl):
     #     model.addConstr(r[lg_id] == ecb * (z[lg_id] - 1))
     
-    # R = model.addVar(vtype=GRB.INTEGER, lb=0, name="R")
-    # R = 1.0 * r.sum('*') / eck
+    # # R: average repair cost of the LRC stripe (continuous)
+    # R = model.addVar(vtype=GRB.CONTINUOUS, lb=0, name="R")
+    # model.addConstr(R == r.sum('*') / eck)
 
     # # Set objective
     # model.setObjective(R, GRB.MINIMIZE)
