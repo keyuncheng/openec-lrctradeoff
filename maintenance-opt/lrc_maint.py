@@ -48,7 +48,7 @@ def main():
     ecg = args.ecg 
 
     # check parameters
-    if check_params() == False:
+    if check_params(eck, ecl, ecg) == False:
         return
 
     ecb = int(eck / ecl)
@@ -139,8 +139,8 @@ def main():
         r_cost = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, name="r_cost")
         for rack_id in range(max_num_racks):
             for lg_id in range(ecl):
-                
-                model.addConstr(r_cost[rack_id, lg_id] == delta[lg_id] - 1)
+                model.addConstr((alpha[rack_id, lg_id] == 0) >> (r_cost[rack_id, lg_id] == 0))
+                model.addConstr((alpha[rack_id, lg_id] >= 1) >> (r_cost[rack_id, lg_id] == delta[lg_id] - 1))
         
         # ARC: average repair cost of the LRC stripe (of all data blocks)
         # TODO: fix the calculation here
