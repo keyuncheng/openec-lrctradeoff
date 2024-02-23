@@ -111,7 +111,7 @@ def main():
             ########### Optimization goal: minimize repair cost #############
 
             # I_R(i): Indicator variable; check whether rack R_i stores any block
-            I_R = model.addVars(max_num_racks, vtype=GRB.BINARY, name="I_b")
+            I_R = model.addVars(max_num_racks, vtype=GRB.BINARY, name="I_R")
             for rack_id in range(max_num_racks):
                 model.addGenConstrIndicator(I_R[rack_id], True, alpha.sum(rack_id, '*') + beta.sum(rack_id, '*') + gamma[rack_id] >= 1)
                 model.addGenConstrIndicator(I_R[rack_id], False, alpha.sum(rack_id, '*') + beta.sum(rack_id, '*') + gamma[rack_id] == 0)
@@ -197,7 +197,7 @@ def main():
             # local group in the i-th rack
 
             # I_R(i): Indicator variable; check whether rack R_i stores any block
-            I_R = model.addVars(max_num_racks, vtype=GRB.BINARY, name="I_b")
+            I_R = model.addVars(max_num_racks, vtype=GRB.BINARY, name="I_R")
             for rack_id in range(max_num_racks):
                 model.addGenConstrIndicator(I_R[rack_id], True, alpha.sum(rack_id, '*') + beta.sum(rack_id, '*') + gamma[rack_id] >= 1)
                 model.addGenConstrIndicator(I_R[rack_id], False, alpha.sum(rack_id, '*') + beta.sum(rack_id, '*') + gamma[rack_id] == 0)
@@ -221,8 +221,8 @@ def main():
                 model.addConstr(delta[lg_id] == I_blk_lg.sum('*', lg_id))
 
             # m_cost_global_lg_tmp(i,j): tmp variable (as Gurobi doesn't
-            # support multiplying three integers)
-            m_cost_global_lg_tmp = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, name="m_cost_global_lg")
+            # support multiplying consecutive three integers in one variable)
+            m_cost_global_lg_tmp = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, name="m_cost_global_lg_tmp")
             for rack_id in range(max_num_racks):
                 for lg_id in range(ecl):
                     model.addConstr(m_cost_global_lg_tmp[rack_id, lg_id] == I_alpha[rack_id, lg_id] * (1 - beta[rack_id, lg_id]))
@@ -232,11 +232,11 @@ def main():
             m_cost_global_lg = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, name="m_cost_global_lg")
             for rack_id in range(max_num_racks):
                 for lg_id in range(ecl):
-                    model.addConstr(m_cost_global_lg[rack_id, lg_id] == alpha[rack_id, lg_id] * (z - 1) + m_cost_global_lg_tmp[rack_id, lg_id] * (delta[lg_id] - 1))
+                    model.addConstr(m_cost_global_lg[rack_id, lg_id] == alpha[rack_id, lg_id] * (z - 1) + m_cost_global_lg_tmp[rack_id, lg_id] * (delta[lg_id] - z))
 
             # m_cost_global(i): maintenance cost of the data blocks in rack
             # R_i (global repair)
-            m_cost_global = model.addVars(max_num_racks, vtype=GRB.INTEGER, lb=0, ub=eck, name="m_cost_global")
+            m_cost_global = model.addVars(max_num_racks, vtype=GRB.INTEGER, name="m_cost_global")
             for rack_id in range(max_num_racks):
                 model.addConstr(m_cost_global[rack_id] == m_cost_global_lg.sum(rack_id, '*'))
 
@@ -291,6 +291,8 @@ def main():
 
         # Optimize model
         model.optimize()
+
+        # TODO: optimize the program and visualize the results
 
         for v in model.getVars():
             print(f"{v.VarName} {v.X:g}")
