@@ -156,7 +156,7 @@ def main():
 
 
             # version 2 (the blocks in each local group have the same r_cost)
-            r_cost_lg = model.addVars(ecl, vtype=GRB.INTEGER, name="r_cost")
+            r_cost_lg = model.addVars(ecl, vtype=GRB.INTEGER, name="r_cost_lg")
             for lg_id in range(ecl):
                 model.addConstr(r_cost_lg[lg_id] == delta[lg_id] - 1)
 
