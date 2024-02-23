@@ -137,21 +137,37 @@ def main():
             # r_cost(i,j): repair cost of data blocks of rack R_i from the local
             # group G_j
 
-            r_cost = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, name="r_cost")
-            for rack_id in range(max_num_racks):
-                for lg_id in range(ecl):
-                    model.addConstr((I_alpha[rack_id, lg_id] == 0) >> (r_cost[rack_id, lg_id] == 0))
-                    model.addConstr((I_alpha[rack_id, lg_id] == 1) >> (r_cost[rack_id, lg_id] == delta[lg_id] - 1))
+            # # version 1
+            # r_cost = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, name="r_cost")
+            # for rack_id in range(max_num_racks):
+            #     for lg_id in range(ecl):
+            #         model.addConstr((I_alpha[rack_id, lg_id] == 0) >> (r_cost[rack_id, lg_id] == 0))
+            #         model.addConstr((I_alpha[rack_id, lg_id] == 1) >> (r_cost[rack_id, lg_id] == delta[lg_id] - 1))
+
+            # # weighted r_cost(i,j): r_cost_weighted(i,j) = alpha(i,j) * r_cost(i,j)
+            # r_cost_weighted = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, name="r_cost_weighted")
+            # for rack_id in range(max_num_racks):
+            #     for lg_id in range(ecl):
+            #         model.addConstr(r_cost_weighted[rack_id, lg_id] == alpha[rack_id, lg_id] * r_cost[rack_id, lg_id])
+            
+            # # ARC: average repair cost of the LRC stripe (of all data blocks)
+            # ARC = model.addVar(vtype=GRB.CONTINUOUS, name="ARC")
+            # model.addConstr(ARC == r_cost_weighted.sum('*', '*') / eck)
+
+
+            # version 2 (the blocks in each local group have the same r_cost)
+            r_cost_lg = model.addVars(ecl, vtype=GRB.INTEGER, name="r_cost")
+            for lg_id in range(ecl):
+                model.addConstr(r_cost_lg[lg_id] == delta[lg_id] - 1)
 
             # weighted r_cost(i,j): r_cost_weighted(i,j) = alpha(i,j) * r_cost(i,j)
-            r_cost_weighted = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, name="r_cost_weighted")
-            for rack_id in range(max_num_racks):
-                for lg_id in range(ecl):
-                    model.addConstr(r_cost_weighted[rack_id, lg_id] == alpha[rack_id, lg_id] * r_cost[rack_id, lg_id])
+            r_cost_weighted = model.addVars(ecl, vtype=GRB.INTEGER, name="r_cost_weighted")
+            for lg_id in range(ecl):
+                model.addConstr(r_cost_weighted[lg_id] == ecb * r_cost_lg[lg_id])
             
             # ARC: average repair cost of the LRC stripe (of all data blocks)
             ARC = model.addVar(vtype=GRB.CONTINUOUS, name="ARC")
-            model.addConstr(ARC == r_cost_weighted.sum('*', '*') / eck)
+            model.addConstr(ARC == r_cost_weighted.sum('*') / eck)
 
             # Set objective
             model.setObjective(ARC, GRB.MINIMIZE)
