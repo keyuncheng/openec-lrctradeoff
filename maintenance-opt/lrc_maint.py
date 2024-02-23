@@ -121,8 +121,8 @@ def main():
             model.addConstr(z == I_R.sum('*'))
 
             # I_alpha(): Indicator variable; check whether rack R_i stores any
-            # data block from local group G_j (I_alpha(i,j) = 1 when alpha(i,j) >=
-            # 1)
+            # data block from local group G_j (I_alpha(i,j) = 1 when
+            # alpha(i,j) >= 1)
             I_alpha = model.addVars(max_num_racks, ecl, vtype=GRB.BINARY, name="I_alpha")
             for rack_id in range(max_num_racks):
                 for lg_id in range(ecl):
@@ -158,21 +158,16 @@ def main():
             # version 2 (the blocks in each local group have the same r_cost)
             r_cost_lg = model.addVars(ecl, vtype=GRB.INTEGER, name="r_cost_lg")
             for lg_id in range(ecl):
-                model.addConstr(r_cost_lg[lg_id] == delta[lg_id] - 1)
-
-            # weighted r_cost(i,j): r_cost_weighted(i,j) = alpha(i,j) * r_cost(i,j)
-            r_cost_weighted = model.addVars(ecl, vtype=GRB.INTEGER, name="r_cost_weighted")
-            for lg_id in range(ecl):
-                model.addConstr(r_cost_weighted[lg_id] == ecb * r_cost_lg[lg_id])
+                model.addConstr(r_cost_lg[lg_id] == ecb * (delta[lg_id] - 1))
             
             # ARC: average repair cost of the LRC stripe (of all data blocks)
             ARC = model.addVar(vtype=GRB.CONTINUOUS, name="ARC")
-            model.addConstr(ARC == r_cost_weighted.sum('*') / eck)
+            model.addConstr(ARC == r_cost_lg.sum('*') / eck)
 
             # Set objective
             model.setObjective(ARC, GRB.MINIMIZE)
 
-            # Setting an initial solution (combined locality)
+            # Start from an initial solution (combined locality)
             for lg_id in range(ecl):
                 for rack_id in range(max_num_racks):
                     alpha[rack_id, lg_id].Start = 0
