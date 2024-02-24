@@ -206,6 +206,18 @@ def main():
             z = model.addVar(vtype=GRB.INTEGER, name="z")
             model.addConstr(z == I_R.sum('*'))
 
+            # I_sigma(i): Indicator variable; check whether rack R_i stores
+            # any data block or global parity
+            I_sigma = model.addVars(max_num_racks, vtype=GRB.BINARY, name="I_sigma")
+            for rack_id in range(max_num_racks):
+                model.addGenConstrIndicator(I_sigma[rack_id], True, alpha.sum(rack_id, '*') + gamma[rack_id] >= 1)
+                model.addGenConstrIndicator(I_sigma[rack_id], False, alpha.sum(rack_id, '*') + gamma[rack_id] == 0)
+
+            # sigma: number of racks spanned by the data blocks and global
+            # parity blocks
+            sigma = model.addVar(vtype=GRB.INTEGER, name="sigma")
+            model.addConstr(sigma == I_sigma.sum('*'))
+
             # I_alpha(): Indicator variable; check whether rack R_i stores any
             # data block from local group G_j (I_alpha(i,j) = 1 when
             # alpha(i,j) >= 1)
@@ -232,7 +244,7 @@ def main():
             m_cost_global_lg = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, name="m_cost_global_lg")
             for rack_id in range(max_num_racks):
                 for lg_id in range(ecl):
-                    model.addConstr(m_cost_global_lg[rack_id, lg_id] == alpha[rack_id, lg_id] * (z - 1) + m_cost_global_lg_tmp[rack_id, lg_id] * (delta[lg_id] - z))
+                    model.addConstr(m_cost_global_lg[rack_id, lg_id] == alpha[rack_id, lg_id] * (sigma - 1) + m_cost_global_lg_tmp[rack_id, lg_id] * (delta[lg_id] - sigma))
 
             # m_cost_global(i): maintenance cost of the data blocks in rack
             # R_i (global repair)
