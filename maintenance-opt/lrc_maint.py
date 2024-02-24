@@ -171,7 +171,7 @@ def main():
                 for lg_id in range(ecl):
                     alpha[rack_id, lg_id].Start = 0
                     beta[ecb, lg_id].Start = 0
-                gamma[rack_id] = 0
+                gamma[rack_id].Start = 0
 
             max_blocks_per_rack = ecg + 1 # g+1 blocks per rack
             cur_rack_id = 0
@@ -266,8 +266,8 @@ def main():
                 for lg_id in range(ecl):
                     model.addConstr(m_cost_lg_sum[rack_id, lg_id] == alpha[rack_id, lg_id] * m_cost[rack_id, lg_id])
 
-            # M: average maintenance cost of the LRC stripe (continuous)
-            AMC = model.addVar(vtype=GRB.CONTINUOUS, name="M")
+            # AMC: average maintenance cost of the LRC stripe (continuous)
+            AMC = model.addVar(vtype=GRB.CONTINUOUS, name="AMC")
             model.addConstr(AMC == m_cost_lg_sum.sum('*', '*') / eck)
 
             # Set objective
@@ -279,15 +279,23 @@ def main():
                 for lg_id in range(ecl):
                     alpha[rack_id, lg_id].Start = 0
                     beta[ecb, lg_id].Start = 0
-                gamma[rack_id] = 0
+                gamma[rack_id].Start = 0
 
             for lg_id in range(ecl):
                 for rack_id in range(ecb):
                     alpha[rack_id, lg_id].Start = 1
                 beta[ecb, lg_id].Start = 1
-            gamma[ecb] = ecg
+            gamma[ecb].Start = ecg
 
             #################################################################
+
+        ############### Gurobi Parameter tuning ##############################
+        
+        model.setParam('MIPFocus', 3) # more focus on proving the objective bound
+        model.setParam('Heuristics', 0) # only focus on proving the objective bound, instead of finding multiple feasible solutions
+
+        ######################################################################
+
 
         # Optimize model
         model.optimize()
@@ -302,9 +310,8 @@ def main():
 
     except gp.GurobiError as e:
         print(f"Error code {e.errno}: {e}")
-
     # except AttributeError:
-    #     print("Encountered an attribute error")
+        # print("Encountered an attribute error")
 
 
 
