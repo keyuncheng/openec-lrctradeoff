@@ -223,32 +223,34 @@ def main():
                     cur_rack_id += 1
                 
             #####################################################################
-        elif args.problem == "m":
+        elif args.problem == "m": # TODO: fix
             ######### Optimization goal: minimize maintenance cost ###########
-            # m_cost(i，j) maintenance cost for the data blocks from the j-th
-            # local group in the i-th rack
 
-            # I_R(i): Indicator variable; check whether rack R_i stores any block
-            I_R = model.addVars(max_num_racks, vtype=GRB.BINARY, name="I_R")
-            for rack_id in range(max_num_racks):
-                model.addGenConstrIndicator(I_R[rack_id], True, alpha.sum(rack_id, '*') + beta.sum(rack_id, '*') + gamma[rack_id] >= 1)
-                model.addGenConstrIndicator(I_R[rack_id], False, alpha.sum(rack_id, '*') + beta.sum(rack_id, '*') + gamma[rack_id] == 0)
-
-            # z: number of racks spanned by the stripe
-            z = model.addVar(vtype=GRB.INTEGER, name="z")
-            model.addConstr(z == I_R.sum('*'))
-
+            # Definition of sigma (version 1)
             # I_sigma(i): Indicator variable; check whether rack R_i stores
             # any data block or global parity
             I_sigma = model.addVars(max_num_racks, vtype=GRB.BINARY, name="I_sigma")
             for rack_id in range(max_num_racks):
-                model.addGenConstrIndicator(I_sigma[rack_id], True, alpha.sum(rack_id, '*') + gamma[rack_id] >= 1)
-                model.addGenConstrIndicator(I_sigma[rack_id], False, alpha.sum(rack_id, '*') + gamma[rack_id] == 0)
-
+                model.addGenConstrIndicator(I_sigma[rack_id], True, alpha.sum(rack_id, '*') >= 1)
+                model.addGenConstrIndicator(I_sigma[rack_id], False, alpha.sum(rack_id, '*') == 0)
+            
             # sigma: number of racks spanned by the data blocks and global
             # parity blocks
             sigma = model.addVar(vtype=GRB.INTEGER, name="sigma")
-            model.addConstr(sigma == I_sigma.sum('*'))
+            model.addConstr(sigma == I_sigma.sum('*') + 1)
+
+            # # Definition of sigma (version 2)
+            # # I_sigma(i): Indicator variable; check whether rack R_i stores
+            # # any data block or global parity
+            # I_sigma = model.addVars(max_num_racks, vtype=GRB.BINARY, name="I_sigma")
+            # for rack_id in range(max_num_racks):
+            #     model.addGenConstrIndicator(I_sigma[rack_id], True, alpha.sum(rack_id, '*') + gamma[rack_id] >= 1)
+            #     model.addGenConstrIndicator(I_sigma[rack_id], False, alpha.sum(rack_id, '*') + gamma[rack_id] == 0)
+
+            # # sigma: number of racks spanned by the data blocks and global
+            # # parity blocks
+            # sigma = model.addVar(vtype=GRB.INTEGER, name="sigma")
+            # model.addConstr(sigma == I_sigma.sum('*'))
 
             # I_alpha(): Indicator variable; check whether rack R_i stores any
             # data block from local group G_j (I_alpha(i,j) = 1 when
