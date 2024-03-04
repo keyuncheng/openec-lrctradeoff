@@ -331,7 +331,7 @@ def main():
                 for rack_id in range(ecb):
                     alpha[rack_id, lg_id].Start = 1
                 beta[ecb, lg_id].Start = 1
-            gamma[ecb].Start = ecg
+            gamma[ecb + 1].Start = ecg
 
             #################################################################
 
@@ -345,8 +345,6 @@ def main():
 
         # Optimize model
         model.optimize()
-
-        # TODO: optimize the program and visualize the results
 
         for v in model.getVars():
             print(f"{v.VarName} {v.X:g}")
