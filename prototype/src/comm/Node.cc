@@ -5,13 +5,15 @@ Node::Node(uint16_t _self_conn_id, Config &_config) : self_conn_id(_self_conn_id
     // init socket
     sockpp::socket_initializer::initialize();
 
-    if (self_conn_id != CTRL_NODE_ID)
-    {
-        // add controller
-        addrs_map[CTRL_NODE_ID] = pair<string, unsigned int>(config.controller_addr.first, config.controller_addr.second);
-        connectors_map[CTRL_NODE_ID] = sockpp::tcp_connector();
-        sockets_map[CTRL_NODE_ID] = sockpp::tcp_socket();
-    }
+    // add controller
+    addrs_map[CTRL_NODE_ID] = pair<string, unsigned int>(config.controller_addr.first, config.controller_addr.second);
+    connectors_map[CTRL_NODE_ID] = sockpp::tcp_connector();
+    sockets_map[CTRL_NODE_ID] = sockpp::tcp_socket();
+
+    // add gateway
+    addrs_map[GATEWAY_NODE_ID] = pair<string, unsigned int>(config.controller_addr.first, config.controller_addr.second);
+    connectors_map[GATEWAY_NODE_ID] = sockpp::tcp_connector();
+    sockets_map[GATEWAY_NODE_ID] = sockpp::tcp_socket();
 
     // add Agent
     for (auto &item : config.agent_addr_map)
@@ -31,6 +33,10 @@ Node::Node(uint16_t _self_conn_id, Config &_config) : self_conn_id(_self_conn_id
     if (self_conn_id == CTRL_NODE_ID)
     {
         self_port = config.controller_addr.second;
+    }
+    else if (self_conn_id == GATEWAY_NODE_ID)
+    {
+        self_port = config.gateway_addr.second;
     }
     else
     {
@@ -65,6 +71,13 @@ void Node::connectAllSockets(uint16_t self_conn_id, unordered_map<uint16_t, sock
     for (auto &item : *addrs_map)
     {
         uint16_t conn_id = item.first;
+
+        // skip self connection
+        if (conn_id == self_conn_id)
+        {
+            continue;
+        }
+
         string ip = addrs_map->at(conn_id).first;
         unsigned int port = addrs_map->at(conn_id).second;
         conn_threads[conn_id] = new thread(Node::connectOneSocket, self_conn_id, connectors_map, conn_id, ip, port);
@@ -149,7 +162,7 @@ void Node::handleAckOneSocket(uint16_t self_conn_id, unordered_map<uint16_t, soc
 void Node::ackConnAllSockets(uint16_t self_conn_id, unordered_map<uint16_t, sockpp::tcp_socket> *sockets_map, sockpp::tcp_acceptor *acceptor)
 {
     uint16_t num_acked_nodes = 0;
-    uint16_t num_conns = sockets_map->size();
+    uint16_t num_conns = sockets_map->size() - 1; // except the self_conn_id
     while (num_acked_nodes < num_conns)
     {
         sockpp::inet_address conn_addr;

@@ -16,6 +16,7 @@ public:
 
     // Controller
     pair<string, unsigned int> controller_addr;
+    pair<string, unsigned int> gateway_addr;
     map<uint16_t, pair<string, unsigned int>> agent_addr_map;
     string metadata_filename; // metadata
 

@@ -1,6 +1,6 @@
 #include "include/include.hh"
 #include "util/Config.hh"
-#include "comm/CtrlNode.hh"
+#include "comm/GatewayNode.hh"
 
 int main(int argc, char **argv)
 {
@@ -15,10 +15,10 @@ int main(int argc, char **argv)
     Config config(config_filename);
     config.print();
 
-    CtrlNode ctrl_node(CTRL_NODE_ID, config);
+    // GatewayNode gateway_node(GATEWAY_NODE_ID, config);
 
-    ctrl_node.start();
-    ctrl_node.stop();
+    // gateway_node.start();
+    // gateway_node.stop();
 
     printf("Controller::main finished\n");
 }
