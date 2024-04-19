@@ -15,10 +15,10 @@ int main(int argc, char **argv)
     Config config(config_filename);
     config.print();
 
-    // GatewayNode gateway_node(GATEWAY_NODE_ID, config);
+    GatewayNode gateway_node(GATEWAY_NODE_ID, config);
 
-    // gateway_node.start();
-    // gateway_node.stop();
+    gateway_node.start();
+    gateway_node.stop();
 
     printf("Controller::main finished\n");
 }
