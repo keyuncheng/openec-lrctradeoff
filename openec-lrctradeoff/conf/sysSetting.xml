@@ -25,9 +25,9 @@
 <attribute><name>dss.parameter</name><value>192.168.10.20,9000</value></attribute>
 <attribute><name>ec.concurrent.num</name><value>15</value></attribute>
 <attribute><name>ec.policy</name>
-<value><ecid>WASLRC_14_10</ecid><class>WASLRC</class><n>14</n><k>10</k><w>1</w><opt>2</opt><param>2,2</param></value>
+<value><ecid>AzureLRCFlat_14_10</ecid><class>AzureLRCFlat</class><n>14</n><k>10</k><w>1</w><opt>2</opt><param>2,2</param></value>
 </attribute>
 <attribute><name>offline.pool</name>
-<value><poolid>WASLRC_14_10_pool</poolid><ecid>WASLRC_14_10</ecid><base>64</base></value>
+<value><poolid>AzureLRCFlat_14_10_pool</poolid><ecid>AzureLRCFlat_14_10</ecid><base>64</base></value>
 </attribute>
 </setting>

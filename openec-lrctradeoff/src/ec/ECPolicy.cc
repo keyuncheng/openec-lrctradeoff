@@ -21,15 +21,15 @@ ECBase *ECPolicy::createECClass()
     //    toret = new RSCONV(_n, _k, _w, _locality, _opt, _param);
     toret = new RSCONV(_n, _k, _w, _opt, _param);
   }
-  else if (_classname == "WASLRC")
+  else if (_classname == "AzureLRCFlat")
   {
-    //    toret = new WASLRC(_n, _k, _w, _locality, _opt, _param);
-    toret = new WASLRC(_n, _k, _w, _opt, _param);
+    //    toret = new AzureLRCFlat(_n, _k, _w, _locality, _opt, _param);
+    toret = new AzureLRCFlat(_n, _k, _w, _opt, _param);
   }
-  else if (_classname == "AzureLRC")
+  else if (_classname == "AzureLRCTradeoff")
   {
-    //    toret = new AzureLRC(_n, _k, _w, _locality, _opt, _param);
-    toret = new AzureLRC(_n, _k, _w, _opt, _param);
+    //    toret = new AzureLRCTradeoff(_n, _k, _w, _locality, _opt, _param);
+    toret = new AzureLRCTradeoff(_n, _k, _w, _opt, _param);
   }
   else
   {

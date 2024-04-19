@@ -3,8 +3,8 @@
 
 #include "ECBase.hh"
 #include "RSCONV.hh"
-#include "WASLRC.hh"
-#include "AzureLRC.hh"
+#include "AzureLRCFlat.hh"
+#include "AzureLRCTradeoff.hh"
 
 #include "../inc/include.hh"
 
