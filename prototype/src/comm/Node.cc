@@ -11,7 +11,7 @@ Node::Node(uint16_t _self_conn_id, Config &_config) : self_conn_id(_self_conn_id
     sockets_map[CTRL_NODE_ID] = sockpp::tcp_socket();
 
     // add gateway
-    addrs_map[GATEWAY_NODE_ID] = pair<string, unsigned int>(config.controller_addr.first, config.controller_addr.second);
+    addrs_map[GATEWAY_NODE_ID] = pair<string, unsigned int>(config.gateway_addr.first, config.gateway_addr.second);
     connectors_map[GATEWAY_NODE_ID] = sockpp::tcp_connector();
     sockets_map[GATEWAY_NODE_ID] = sockpp::tcp_socket();
 
@@ -110,9 +110,18 @@ void Node::connectOneSocket(uint16_t self_conn_id, unordered_map<uint16_t, sockp
 {
     // create connection
     sockpp::tcp_connector &connector = connectors_map->at(conn_id);
-    while (!(connector = sockpp::tcp_connector(sockpp::inet_address(ip, port))))
+
+    while (true)
     {
-        this_thread::sleep_for(chrono::milliseconds(1));
+        auto res = connector.connect(ip, port);
+        if (res.is_error())
+        {
+            this_thread::sleep_for(chrono::milliseconds(10));
+        }
+        else
+        {
+            break;
+        }
     }
 
     // printf("Successfully created connection to conn_id: %u (%s, %u)\n", conn_id, ip.c_str(), port);
