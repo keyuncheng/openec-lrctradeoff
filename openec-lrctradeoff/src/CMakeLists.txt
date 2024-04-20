@@ -17,6 +17,8 @@ add_executable(OECClient OECClient.cc)
 add_executable(ECDAGTest ECDAGTest.cc)
 add_executable(CodeTest CodeTest.cc)
 
+add_executable(RepairTest RepairTest.cc)
+
 # if (${FS_TYPE} MATCHES "HDFS")
 #   add_executable(HDFSClient HDFSClient.cc)
 #   add_executable(HDFSClientSeekTest HDFSClientSeekTest.cc)
@@ -27,6 +29,8 @@ target_link_libraries(OECAgent common pthread fs)
 target_link_libraries(OECClient common pthread)
 target_link_libraries(ECDAGTest common ec)
 target_link_libraries(CodeTest common ec)
+
+target_link_libraries(RepairTest common ec)
 
 # if (${FS_TYPE} MATCHES "HDFS")
 #   target_link_libraries(HDFSClient common fs)

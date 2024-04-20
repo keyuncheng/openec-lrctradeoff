@@ -8,7 +8,7 @@ AzureLRCFlat::AzureLRCFlat(int n, int k, int w, int opt, vector<string> param)
     _opt = opt;
     if (param.size() != 2)
     {
-        printf("AzureLRCFlat::error invalid params\n");
+        printf("AzureLRCFlat::error invalid params (l,g)\n");
     }
 
     // two parameters in <param>
@@ -26,6 +26,18 @@ AzureLRCFlat::AzureLRCFlat(int n, int k, int w, int opt, vector<string> param)
         for (int j = 0; j < _k; j++)
         {
             printf("%d ", _encode_matrix[i * _k + j]);
+        }
+        printf("\n");
+    }
+
+    vector<vector<int>> group;
+    Place(group);
+    printf("groups:\n");
+    for (auto item : group)
+    {
+        for (auto it : item)
+        {
+            printf("%d ", it);
         }
         printf("\n");
     }
@@ -111,7 +123,7 @@ ECDAG *AzureLRCFlat::Decode(vector<int> from, vector<int> to)
                 data.push_back(i);
                 coef.push_back(_encode_matrix[ridx * _k + i]);
             }
-        } // pending update
+        }
         ecdag->Join(ridx, data, coef);
     }
     else
@@ -155,9 +167,11 @@ void AzureLRCFlat::generateMatrix(int *matrix, int k, int l, int r, int w)
 
 void AzureLRCFlat::Place(vector<vector<int>> &group)
 {
-    vector<vector<int>> groups(_n);
-    for (int i = 0; i < groups.size(); i++)
+    group.clear();
+    for (int i = 0; i < _n; i++)
     {
-        groups[i].push_back(i);
+        vector<int> gp;
+        gp.push_back(i);
+        group.push_back(gp);
     }
 }

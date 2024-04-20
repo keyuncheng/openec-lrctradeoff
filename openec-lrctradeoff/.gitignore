@@ -10,23 +10,7 @@ OECClient
 ECDAGTest
 HDFSClient
 CodeTest
-
-HTECTest
-HHXORTest
-HHXORPlusTest
-HHNonXORTest
-
-RSMultiInsTest
-AzureLRCTest
-HTECTest
-ETRSConvTest
-ETAzureLRCTest
-ETHHXORTest
-ETHHXORPlusTest
-ETHHNonXORTest
-ClayTest
-BUTTERFLYTest
-RDPRDORTest
+RepairTest
 
 local_test_nrb/
 settings.json

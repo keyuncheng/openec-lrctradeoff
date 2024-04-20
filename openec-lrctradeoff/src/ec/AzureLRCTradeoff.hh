@@ -15,10 +15,18 @@ private:
     int _g;
     int *_encode_matrix = NULL;
 
+    int _eta;
+
     void generateMatrix(int *matrix, int k, int l, int r, int w);
 
     ECDAG *DecodeSingleRepair(vector<int> from, vector<int> to);
     ECDAG *DecodeMaintenance(vector<int> from, vector<int> to);
+    ECDAG *DecodeLocalMaintenance(vector<int> from, vector<int> to);
+    ECDAG *DecodeGlobalMaintenance(vector<int> from, vector<int> to);
+
+    bool checkMaintenanceConstraints(vector<int> from, vector<int> to);
+
+    int getResidingGroup(int blk_id);
 
 public:
     AzureLRCTradeoff(int n, int k, int w, int opt, vector<string> param);
