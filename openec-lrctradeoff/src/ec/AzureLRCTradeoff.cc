@@ -492,14 +492,34 @@ ECDAG *AzureLRCTradeoff::DecodeGlobalMaintenance(vector<int> from, vector<int> t
         return ecdag;
     }
 
+    printf("AzureLRCTradeoff::rec_matrix:\n");
+    for (int i = 0; i < _n; i++)
+    {
+        for (int j = 0; j < _k; j++)
+        {
+            printf("%d ", rec_matrix[i * _k + j]);
+        }
+        printf("\n");
+    }
+
     // invert rec_matrix
     // i.e., [inv_mtx] * [virtual_symbols] = [failed_blocks_in_the_rack]
     int *inv_rec_matrix = (int *)malloc(failed_dbs.size() * failed_dbs.size() * sizeof(int));
     jerasure_invert_matrix(rec_matrix, inv_rec_matrix, failed_dbs.size(), failed_dbs.size());
 
+    printf("AzureLRCTradeoff::inv_rec_matrix:\n");
+    for (int i = 0; i < _n; i++)
+    {
+        for (int j = 0; j < _k; j++)
+        {
+            printf("%d ", inv_rec_matrix[i * _k + j]);
+        }
+        printf("\n");
+    }
+
     for (int idx = 0; idx < failed_dbs.size(); idx++)
     {
-        if (failed_dbs[idx] = failed_idx)
+        if (failed_dbs[idx] == failed_idx)
         {
             vector<int> data;
             vector<int> coef;
