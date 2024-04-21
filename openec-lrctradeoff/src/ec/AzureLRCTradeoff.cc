@@ -398,7 +398,6 @@ ECDAG *AzureLRCTradeoff::DecodeGlobalMaintenance(vector<int> from, vector<int> t
             if (find(lg.begin(), lg.end(), _k + lg_id) != lg.end())
             {
                 is_lp_available = false;
-                break;
             }
 
             // add lp.size() - 1 virtual symbols corresponding to global
@@ -488,16 +487,16 @@ ECDAG *AzureLRCTradeoff::DecodeGlobalMaintenance(vector<int> from, vector<int> t
     // check if the number of virtual symbols are correct
     if (vir_syms.size() != failed_dbs.size())
     {
-        printf("AzureLRCTradeoff:: incorrect number of virtual symbols\n");
+        printf("AzureLRCTradeoff:: incorrect number of virtual symbols: %ld, %ld\n", failed_dbs.size(), vir_syms.size());
         return ecdag;
     }
 
     printf("AzureLRCTradeoff::rec_matrix:\n");
-    for (int i = 0; i < _n; i++)
+    for (int i = 0; i < failed_dbs.size(); i++)
     {
-        for (int j = 0; j < _k; j++)
+        for (int j = 0; j < failed_dbs.size(); j++)
         {
-            printf("%d ", rec_matrix[i * _k + j]);
+            printf("%d ", rec_matrix[i * failed_dbs.size() + j]);
         }
         printf("\n");
     }
@@ -505,14 +504,14 @@ ECDAG *AzureLRCTradeoff::DecodeGlobalMaintenance(vector<int> from, vector<int> t
     // invert rec_matrix
     // i.e., [inv_mtx] * [virtual_symbols] = [failed_blocks_in_the_rack]
     int *inv_rec_matrix = (int *)malloc(failed_dbs.size() * failed_dbs.size() * sizeof(int));
-    jerasure_invert_matrix(rec_matrix, inv_rec_matrix, failed_dbs.size(), failed_dbs.size());
+    jerasure_invert_matrix(rec_matrix, inv_rec_matrix, failed_dbs.size(), 8);
 
     printf("AzureLRCTradeoff::inv_rec_matrix:\n");
-    for (int i = 0; i < _n; i++)
+    for (int i = 0; i < failed_dbs.size(); i++)
     {
-        for (int j = 0; j < _k; j++)
+        for (int j = 0; j < failed_dbs.size(); j++)
         {
-            printf("%d ", inv_rec_matrix[i * _k + j]);
+            printf("%d ", inv_rec_matrix[i * failed_dbs.size() + j]);
         }
         printf("\n");
     }
