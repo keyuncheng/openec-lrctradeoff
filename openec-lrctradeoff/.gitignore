@@ -11,6 +11,7 @@ ECDAGTest
 HDFSClient
 CodeTest
 RepairTest
+AzureLRCTradeoffTest
 
 local_test_nrb/
 settings.json
