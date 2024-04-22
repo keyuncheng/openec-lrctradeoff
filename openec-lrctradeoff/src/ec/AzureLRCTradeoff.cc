@@ -343,6 +343,8 @@ ECDAG *AzureLRCTradeoff::DecodeGlobalMaintenance(vector<int> from, vector<int> t
     memset(rec_matrix, 0, failed_dbs.size() * failed_dbs.size() * sizeof(int));
     int rec_mtx_rid = 0;
 
+    vector<int> bindX_gp;
+
     for (int lg_id = 0; lg_id < _l; lg_id++)
     { // check each local group
         auto &lg = failed_rack_blk_lg[lg_id];
@@ -438,6 +440,8 @@ ECDAG *AzureLRCTradeoff::DecodeGlobalMaintenance(vector<int> from, vector<int> t
 
                 ecdag->Join(vir_sym, data, coef);
 
+                bindX_gp.push_back(vir_sym);
+
                 // update the number of used global parity blocks
                 num_used_gp++;
             }
@@ -483,6 +487,9 @@ ECDAG *AzureLRCTradeoff::DecodeGlobalMaintenance(vector<int> from, vector<int> t
             }
         }
     }
+
+    // TODO: fix here: bindX for global parities
+    ecdag->BindX(bindX_gp);
 
     // check if the number of virtual symbols are correct
     if (vir_syms.size() != failed_dbs.size())

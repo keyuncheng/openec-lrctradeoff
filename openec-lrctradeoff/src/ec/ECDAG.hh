@@ -13,59 +13,71 @@ using namespace std;
 #define BINDSTART 10200
 #define OPTSTART 10300
 
-class ECDAG {
-  private:
-    unordered_map<int, ECNode*> _ecNodeMap;
-    vector<int> _ecHeaders;
-    int _bindId = BINDSTART;
-    vector<Cluster*> _clusterMap;
-    int _optId = OPTSTART; 
+class ECDAG
+{
+private:
+  unordered_map<int, ECNode *> _ecNodeMap;
+  vector<int> _ecHeaders;
+  int _bindId = BINDSTART;
+  vector<Cluster *> _clusterMap;
+  int _optId = OPTSTART;
 
-    int findCluster(vector<int> childs);
-  public:
-    ECDAG(); 
-    ~ECDAG();
+  int findCluster(vector<int> childs);
 
-    void Join(int pidx, vector<int> cidx, vector<int> coefs);
-    int BindX(vector<int> idxs);
-    void BindY(int pidx, int cidx);
+public:
+  ECDAG();
+  ~ECDAG();
 
-    // topological sorting
-    vector<int> toposort();
-    ECNode* getNode(int cidx);
-    vector<int> getHeaders();
-    vector<int> getLeaves();
+  void Join(int pidx, vector<int> cidx, vector<int> coefs);
+  int BindX(vector<int> idxs);
+  void BindY(int pidx, int cidx);
 
-    // ecdag reconstruction
-    void reconstruct(int opt);
-    void optimize(int opt, 
-                  unordered_map<int, pair<string, unsigned int>> objlist,
-                  unordered_map<unsigned int, string> ip2Rack,
-                  int ecn,
-                  int eck,
-                  int ecw);
-    void optimize2(int opt, 
-                  unordered_map<int, unsigned int>& cid2ip,
-                  unordered_map<unsigned int, string> ip2Rack,
-                  int ecn, int eck, int ecw,
-                  unordered_map<int, unsigned int> sid2ip,
-                  vector<unsigned int> allIps,
-                  bool locality);
-    void Opt0();
-    void Opt1();
-    void Opt2(unordered_map<int, string> n2Rack);
+  // topological sorting
+  vector<int> toposort();
+  ECNode *getNode(int cidx);
+  vector<int> getHeaders();
+  vector<int> getLeaves();
 
-    // parse cmd
-    unordered_map<int, AGCommand*> parseForOEC(unordered_map<int, unsigned int> cid2ip,
-                                   string stripename, 
-                                   int n, int k, int w, int num,
-                                   unordered_map<int, pair<string, unsigned int>> objlist);
-    vector<AGCommand*> persist(unordered_map<int, unsigned int> cid2ip, 
-                                  string stripename,
-                                  int n, int k, int w, int num,
-                                  unordered_map<int, pair<string, unsigned int>> objlist);
+  // ecdag reconstruction
+  void reconstruct(int opt);
+  void optimize(int opt,
+                unordered_map<int, pair<string, unsigned int>> objlist,
+                unordered_map<unsigned int, string> ip2Rack,
+                int ecn,
+                int eck,
+                int ecw);
+  void optimize2(int opt,
+                 unordered_map<int, unsigned int> &cid2ip,
+                 unordered_map<unsigned int, string> ip2Rack,
+                 int ecn, int eck, int ecw,
+                 unordered_map<int, unsigned int> sid2ip,
+                 vector<unsigned int> allIps,
+                 bool locality);
+  void Opt0();
+  void Opt1();
+  void Opt2(unordered_map<int, string> n2Rack);
 
-    // for debug
-    void dump();
+  /**
+   * @brief Optimization 3: hierarchical optimization
+   * (1) Aggregate inner-rack operations in one node
+   * (2) Aggregate cross-rack operations in another node
+   * (3) Not applying pipelining encoding for inner-rack or cross-rack operations
+   *
+   * @param n2Rack
+   */
+  void Opt3(unordered_map<int, string> n2Rack);
+
+  // parse cmd
+  unordered_map<int, AGCommand *> parseForOEC(unordered_map<int, unsigned int> cid2ip,
+                                              string stripename,
+                                              int n, int k, int w, int num,
+                                              unordered_map<int, pair<string, unsigned int>> objlist);
+  vector<AGCommand *> persist(unordered_map<int, unsigned int> cid2ip,
+                              string stripename,
+                              int n, int k, int w, int num,
+                              unordered_map<int, pair<string, unsigned int>> objlist);
+
+  // for debug
+  void dump();
 };
 #endif
