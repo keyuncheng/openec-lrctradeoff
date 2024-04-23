@@ -1,12 +1,13 @@
 #!/bin/bash
 
-if [ "$#" != "1" ]; then
-	echo "Usage: $0 <script>.sh" >&2
+if [ "$#" -lt "1" ]; then
+	echo "Usage: $0 <script>.sh <args>" >&2
     exit 1
 fi
 
 cur_dir=`pwd`
 script=$1
+args=${@:2}
 
 if [ ! -f "$cur_dir/$script" ]; then
     echo "script $script does not exist"
@@ -23,7 +24,7 @@ do
     passwd=`echo $line | cut -d " " -f 3`
    
     # run script
-    echo ssh -n $user@$ip "cd $cur_dir && bash $script"
-    ssh -n $user@$ip "cd $cur_dir && bash $script"
+    echo ssh -n $user@$ip "cd $cur_dir && bash $script $args"
+    ssh -n $user@$ip "cd $cur_dir && bash $script $args"
 
 done < $login_file

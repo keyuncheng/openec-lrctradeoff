@@ -23,7 +23,7 @@ do
     passwd=`echo $line | cut -d " " -f 3`
    
     # run cmd
-    echo ssh -n $user@$ip "echo kycheng | sudo -S apt-get -y install expect"
-    ssh -n $user@$ip "echo kycheng | sudo -S apt-get -y install expect"
-
+    # echo ssh -n $user@$ip "echo kycheng | sudo -S apt-get -y install expect"
+    # ssh -n $user@$ip "echo kycheng | sudo -S apt-get -y install expect"
+    echo "\$nrconf{restart} = 'a'" | sudo tee /etc/needrestart/conf.d/no-prompt.conf
 done < $login_file
