@@ -1,0 +1,8 @@
+# Scripts for experiments in distributed settings
+login.txt: logins for nodes. Format: <ip> <username> <password>
+set_login.sh: create user on each node; set root privilege
+test_login.sh: test ssh connection on each node
+set_ssh.sh: setup ssh passwordless connection on each node
+run_cmd_dist.sh: run command on each node
+run_script_dist.sh: run script on each node
+install.sh: install packages
