@@ -1,5 +1,11 @@
 #!/bin/bash
-# Credit: https://cloud.google.com/compute/docs/disks/benchmarking-pd-performance
+# Credit:
+# https://cloud.google.com/compute/docs/disks/benchmarking-pd-performance
+
+if [ "$#" != "1" ]; then
+    echo "Usage: $0 test_dir" >&2
+    exit 1
+fi
 
 TEST_DIR=$1
 mkdir -p $TEST_DIR

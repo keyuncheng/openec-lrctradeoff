@@ -1,18 +1,14 @@
 #!/usr/bin/expect -f
+# usage: set login for all nodes
 
-# set login by root user
+source "./config.sh"
 
-root_user_name=kycheng
-root_user_passwd=kycheng
-login_file="/home/kycheng/scripts/login.txt"
-echo "login_file:" $login_file
-
-while IFS= read -r line
-do
-    ip=`echo $line | cut -d " " -f 1`
-    user=`echo $line | cut -d " " -f 2`
-    passwd=`echo $line | cut -d " " -f 3`
-    expect <<EOF
+for idx in $(seq 0 $((num_nodes-1))); do
+    ip=${ip_list[$idx]}
+    user=${user_list[$idx]}
+    passwd=${passwd_list[$idx]}
+    
+    expect << EOF
    
     # ssh 
     set timeout 5
@@ -44,5 +40,7 @@ do
     
     send "exit\n"
     expect eof
-EOF
-done < $login_file
+
+    EOF
+done
+

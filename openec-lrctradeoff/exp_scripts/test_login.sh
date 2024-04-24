@@ -1,16 +1,15 @@
 #!/usr/bin/expect -f
+# usage: test ssh connection on all nodes
 
-# test ssh connection
+source "./config.sh"
 
-login_file="/home/kycheng/scripts/login.txt"
-echo "login_file:" $login_file
-
-while IFS= read -r line
-do
-    ip=`echo $line | cut -d " " -f 1`
-    user=`echo $line | cut -d " " -f 2`
-    passwd=`echo $line | cut -d " " -f 3`
-    expect <<EOF
+for idx in $(seq 0 $((num_nodes-1))); do
+    ip=${ip_list[$idx]}
+    user=${user_list[$idx]}
+    passwd=${passwd_list[$idx]}
+    
+    expect << EOF
+    
     set timeout 5
     spawn ssh $user@$ip "echo success"
     expect {
@@ -19,5 +18,6 @@ do
     }
     send "exit\n"
     expect eof
-EOF
-done < $login_file
+
+    EOF
+done

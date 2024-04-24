@@ -1,7 +1,7 @@
 #!/usr/bin/expect -f
+# usage: set mutual password-less ssh connection on all nodes
 
-login_file="/home/kycheng/scripts/login.txt"
-echo "login_file:" $login_file
+source "./config.sh"
 
 # create id_rsa
 if [ ! -f ~/.ssh/id_rsa ];then
@@ -10,12 +10,12 @@ if [ ! -f ~/.ssh/id_rsa ];then
 	  echo "id_rsa has created ..."
 fi
 
-while IFS= read -r line
-do
-    ip=`echo $line | cut -d " " -f 1`
-    user=`echo $line | cut -d " " -f 2`
-    passwd=`echo $line | cut -d " " -f 3`
-    expect <<EOF
+for idx in $(seq 0 $((num_nodes-1))); do
+    ip=${ip_list[$idx]}
+    user=${user_list[$idx]}
+    passwd=${passwd_list[$idx]}
+    
+    expect << EOF
 
     # set ssh-copy-id 
     set timeout 2
@@ -25,5 +25,5 @@ do
         "*password" { send "$passwd\n"; exp_continue }
     }
 
-EOF
-done < $login_file
+    EOF
+done

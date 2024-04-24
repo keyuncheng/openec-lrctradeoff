@@ -1,11 +1,11 @@
 #!/usr/bin/expect -f
+# usage: install packages locally
 
 username=kycheng
 passwd=kycheng
 
-# install packages
 
-expect <<EOF
+expect << EOF
 
 # apt-get
 set timeout -1 
@@ -27,7 +27,5 @@ expect {
 # expect {
 #     "*password" { send "$passwd\n"; exp_continue }
 # }
-
-
 
 EOF

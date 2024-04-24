@@ -1,9 +1,12 @@
 #!/bin/bash
+# usage: run script on all nodes
 
 if [ "$#" -lt "1" ]; then
 	echo "Usage: $0 <script>.sh <args>" >&2
     exit 1
 fi
+
+source "./config.sh"
 
 cur_dir=`pwd`
 script=$1
@@ -14,17 +17,12 @@ if [ ! -f "$cur_dir/$script" ]; then
     exit 1
 fi
 
-login_file="/home/kycheng/scripts/login.txt"
-echo "login_file:" $login_file
-
-while IFS= read -r line
-do
-    ip=`echo $line | cut -d " " -f 1`
-    user=`echo $line | cut -d " " -f 2`
-    passwd=`echo $line | cut -d " " -f 3`
-   
-    # run script
+# run script
+for idx in $(seq 0 $((num_nodes-1))); do
+    ip=${ip_list[$idx]}
+    user=${user_list[$idx]}
+    passwd=${passwd_list[$idx]}
+    
     echo ssh -n $user@$ip "cd $cur_dir && bash $script $args"
     ssh -n $user@$ip "cd $cur_dir && bash $script $args"
-
-done < $login_file
+done

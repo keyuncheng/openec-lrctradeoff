@@ -1,20 +1,20 @@
 #!/usr/bin/bash
+# usage: copy file/dir to all nodes
 
 if [ "$#" != "1" ]; then
     echo "Usage: $0 file/dir" >&2
     exit 1
 fi
 
+source "./config.sh"
+
 file=$1
 
-login_file="/home/kycheng/scripts/login.txt"
-echo "login_file:" $login_file
-
-while IFS= read -r line
-do
-    ip=`echo $line | cut -d " " -f 1`
-    user=`echo $line | cut -d " " -f 2`
-    passwd=`echo $line | cut -d " " -f 3`
+# copy file/dir
+for idx in $(seq 0 $((num_nodes-1))); do
+    ip=${ip_list[$idx]}
+    user=${user_list[$idx]}
+    passwd=${passwd_list[$idx]}
     
     rsync -av $file $user@$ip:$file
-done < $login_file
+done
