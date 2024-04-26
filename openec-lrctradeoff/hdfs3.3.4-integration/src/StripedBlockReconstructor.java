@@ -53,7 +53,7 @@ class StripedBlockReconstructor extends StripedReconstructor
   @Override
   public void run() {
     try {
-      // benchmark single block repair time
+      // Keyun: benchmark single block repair time
       long startBlockRepairTime = System.currentTimeMillis();
       long endBlockRepairTime = 0;
 
@@ -72,15 +72,15 @@ class StripedBlockReconstructor extends StripedReconstructor
 
       endBlockReconstructTime = System.currentTimeMillis();
       long blockReconstructTime = endBlockReconstructTime - startBlockReconstructTime;
-      System.out.println("::StripedBlockReconstructor.blockReconstructTime: " + blockReconstructTime);
+      System.out.println("Keyun::StripedBlockReconstructor.blockReconstructTime: " + blockReconstructTime);
 
 
       stripedWriter.endTargetBlocks();
 
-      // : benchmark single block repair time
+      // Keyun: benchmark single block repair time
       endBlockRepairTime = System.currentTimeMillis();
       long blockRepairTime = endBlockRepairTime - startBlockRepairTime;
-      System.out.println("::StripedBlockReconstructor.blockRepairTime: " + blockRepairTime);
+      System.out.println("Keyun::StripedBlockReconstructor.blockRepairTime: " + blockRepairTime);
 
       // Currently we don't check the acks for packets, this is similar as
       // block replication.
@@ -148,21 +148,21 @@ class StripedBlockReconstructor extends StripedReconstructor
       WTime += endTime - startTime;
       startTime = endTime;
  
-      // // : benchmark time
+      // // Keyun: benchmark time
       // long readTime = readEnd - start;
-      // System.out.println("::StripedBlockReconstructor.reconstruct.readTime: " + readTime);
+      // System.out.println("Keyun::StripedBlockReconstructor.reconstruct.readTime: " + readTime);
  
       // long decodeTime = decodeEnd - readEnd;
-      // System.out.println("::StripedBlockReconstructor.reconstruct.decodeTime: " + decodeTime);
+      // System.out.println("Keyun::StripedBlockReconstructor.reconstruct.decodeTime: " + decodeTime);
  
       // long writeTime = writeEnd - decodeEnd;
-      // System.out.println("::StripedBlockReconstructor.reconstruct.writeTime: " + writeTime);
+      // System.out.println("Keyun::StripedBlockReconstructor.reconstruct.writeTime: " + writeTime);
  
       // long RNDTime = decodeEnd - start;
-      // System.out.println("::StripedBlockReconstructor.reconstruct.RNDTime: " + RNDTime);
+      // System.out.println("Keyun::StripedBlockReconstructor.reconstruct.RNDTime: " + RNDTime);
  
       // long reconstructTime = writeEnd - start;
-      // System.out.println("::StripedBlockReconstructor.reconstruct.reconstructTime: " + reconstructTime);
+      // System.out.println("Keyun::StripedBlockReconstructor.reconstruct.reconstructTime: " + reconstructTime);
 
 
       // Only the succeed reconstructions are recorded.
@@ -176,15 +176,15 @@ class StripedBlockReconstructor extends StripedReconstructor
       clearBuffers();
     }
 
-    // : benchmark time
+    // Keyun: benchmark time
     RDTime = RTime + DTime;
     RDWTime = RDTime + WTime;
 
-    System.out.println("::StripedBlockReconstructor.reconstruct.RTime: " + RTime);
-    System.out.println("::StripedBlockReconstructor.reconstruct.DTime: " + DTime);
-    System.out.println("::StripedBlockReconstructor.reconstruct.WTime: " + WTime);
-    System.out.println("::StripedBlockReconstructor.reconstruct.RDTime: " + RDTime);
-    System.out.println("::StripedBlockReconstructor.reconstruct.RDWTime: " + RDWTime);
+    System.out.println("Keyun::StripedBlockReconstructor.reconstruct.RTime: " + RTime);
+    System.out.println("Keyun::StripedBlockReconstructor.reconstruct.DTime: " + DTime);
+    System.out.println("Keyun::StripedBlockReconstructor.reconstruct.WTime: " + WTime);
+    System.out.println("Keyun::StripedBlockReconstructor.reconstruct.RDTime: " + RDTime);
+    System.out.println("Keyun::StripedBlockReconstructor.reconstruct.RDWTime: " + RDWTime);
   }
 
   private void reconstructTargets(int toReconstructLen) throws IOException {
