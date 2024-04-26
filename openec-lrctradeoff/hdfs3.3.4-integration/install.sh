@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HADOOP_SRC_DIR=/home/kycheng/hadoop-3.3.4-src
+HADOOP_SRC_DIR=/home/kycheng/packages/hadoop-3.3.4-src
 
 # 0. cp third party libraries
 cp ../lib/* ./
@@ -48,6 +48,10 @@ commonpath=${HADOOP_SRC_DIR}/oeclib/commons-pool2-2.4.2.jar
 dependencycommon="<dependency>\n<groupId>org.apache.commons</groupId>\n<artifactId>commons-pool2</artifactId>\n<version>2.4.2</version>\n<scope>system</scope>\n<systemPath>${commonpath}</systemPath>\n</dependency>\n"
 sed -i "/<dependencies>/a ${dependencycommon}" $pomfile
 
+# (fix version issue) hadoop-project pom file
+sed -i 's%\(<nodejs.version>\)[^<]*%\1v14.21.3%' ${HADOOP_SRC_DIR}/hadoop-project/pom.xml
+sed -i 's%\(<yarnpkg.version>\)[^<]*%\1v1.22.19%' ${HADOOP_SRC_DIR}/hadoop-project/pom.xml
+
 # 4. compile source code
 cd $HADOOP_SRC_DIR
-mvn package -Pdist,native -DskipTests -Dmaven.javadoc.skip=true -DskipShade -e -Drequire.isal -Drequire.ssl
+mvn package -Dhttp.proxyHost=137.189.90.217 -Dhttp.proxyPort=8000 -Dhttps.proxyHost=137.189.90.217 -Dhttps.proxyPort=8000 -Pdist,native -DskipTests -Dmaven.javadoc.skip=true -DskipShade -e -Drequire.isal -Drequire.ssl
