@@ -25,5 +25,5 @@ for idx in $(seq 0 $((num_nodes-1))); do
         "*password" { send "$passwd\n"; exp_continue }
     }
 
-    EOF
+EOF
 done

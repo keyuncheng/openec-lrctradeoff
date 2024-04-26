@@ -1,14 +1,15 @@
 #!/usr/bin/bash
 # usage: copy file/dir to all nodes
 
-if [ "$#" != "1" ]; then
-    echo "Usage: $0 file/dir" >&2
+if [ "$#" != "2" ]; then
+	echo "Usage: $0 src_file/src_dir dst_dir" >&2
     exit 1
 fi
 
 source "./config.sh"
 
-file=$1
+src_file=$1
+dst_dir=$2
 
 # copy file/dir
 for idx in $(seq 0 $((num_nodes-1))); do
@@ -16,5 +17,5 @@ for idx in $(seq 0 $((num_nodes-1))); do
     user=${user_list[$idx]}
     passwd=${passwd_list[$idx]}
     
-    rsync -av $file $user@$ip:$file
+    rsync -av --delete --recursive $src_file $user@$ip:$dst_dir
 done

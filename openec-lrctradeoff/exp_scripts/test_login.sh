@@ -16,8 +16,6 @@ for idx in $(seq 0 $((num_nodes-1))); do
         "*yes/no" { send "yes\n"; exp_continue }
         "*password" { send "$passwd\n" }
     }
-    send "exit\n"
-    expect eof
-
-    EOF
+     
+EOF
 done

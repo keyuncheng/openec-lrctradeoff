@@ -1,10 +1,10 @@
 #!/usr/bin/bash
 # usage: configuration files
 
-root_user_name=kycheng
-root_user_passwd=kycheng
-# login_file="/home/kycheng/scripts/login.txt"
-login_file="/mnt/e/projects/wide-lrc/widelrc/openec-lrctradeoff/exp_scripts/login.txt"
+root_user_name=ncsgroup
+root_user_passwd=ncsncsncs
+login_file="/home/kycheng/scripts/login.txt"
+# login_file="/mnt/e/projects/wide-lrc/widelrc/openec-lrctradeoff/exp_scripts/login.txt"
 
 # get node list
 ip_list=()

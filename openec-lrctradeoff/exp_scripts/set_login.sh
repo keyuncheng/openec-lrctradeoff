@@ -35,12 +35,13 @@ for idx in $(seq 0 $((num_nodes-1))); do
     }
     
     # add sudo privilege
-    set timeout 2
+    set timeout 1
     send "sudo usermod -aG sudo $user\n"
-    
+
+    set timeout 1
     send "exit\n"
     expect eof
 
-    EOF
+EOF
 done
 
