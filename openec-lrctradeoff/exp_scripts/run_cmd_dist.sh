@@ -11,6 +11,6 @@ for idx in $(seq 0 $((num_nodes-1))); do
     user=${user_list[$idx]}
     passwd=${passwd_list[$idx]}
     
-    echo ssh -n $user@$ip "echo kycheng | sudo -S apt-get -y install expect"
-    ssh -n $user@$ip "echo kycheng | sudo -S apt-get -y install expect"
+    echo ssh -n $user@$ip "echo $passwd | sudo -S apt-get -y install expect"
+    ssh -n $user@$ip "echo $passwd | sudo -S apt-get -y install expect"
 done

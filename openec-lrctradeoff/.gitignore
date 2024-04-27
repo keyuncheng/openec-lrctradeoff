@@ -11,6 +11,7 @@ ECDAGTest
 HDFSClient
 CodeTest
 RepairTest
+PlacementTest
 AzureLRCTradeoffTest
 
 local_test_nrb/

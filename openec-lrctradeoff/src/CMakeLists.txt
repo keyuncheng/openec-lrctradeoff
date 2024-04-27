@@ -17,6 +17,7 @@ add_executable(OECClient OECClient.cc)
 add_executable(ECDAGTest ECDAGTest.cc)
 add_executable(CodeTest CodeTest.cc)
 
+add_executable(PlacementTest PlacementTest.cc)
 add_executable(RepairTest RepairTest.cc)
 add_executable(AzureLRCTradeoffTest AzureLRCTradeoffTest.cc)
 
@@ -31,6 +32,7 @@ target_link_libraries(ECDAGTest common ec)
 target_link_libraries(CodeTest common ec)
 
 target_link_libraries(RepairTest common ec)
+target_link_libraries(PlacementTest common ec)
 target_link_libraries(AzureLRCTradeoffTest common ec)
 
 if (${FS_TYPE} MATCHES "HDFS")
