@@ -3,7 +3,7 @@
 
 root_user_name=ncsgroup
 root_user_passwd=ncsncsncs
-login_file="/home/kycheng/scripts/login.txt"
+login_file="/home/kycheng/widelrc/openec-lrctradeoff/exp_scripts/login.txt"
 
 # get node list
 ip_list=()
