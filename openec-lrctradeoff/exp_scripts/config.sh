@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 # usage: configuration files
 
 root_user_name=ncsgroup

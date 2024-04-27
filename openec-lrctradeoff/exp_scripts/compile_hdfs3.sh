@@ -27,8 +27,3 @@ bash install.sh
 cp -r $pkg_dir/hadoop-3.3.4-src/hadoop-dist/target/hadoop-3.3.4 $home_dir
 cp -r $pkg_dir/hadoop-3.3.4-src/oeclib $home_dir/hadoop-3.3.4
 
-# compile code
-cd $oec_dir
-cmake . -DFS_TYPE:STRING=HDFS3
-make
-

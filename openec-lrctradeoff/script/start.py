@@ -46,9 +46,9 @@ for slave in slavelist:
     os.system("ssh " + slave + " \"killall OECAgent \"")
     os.system("ssh " + slave + " \"killall OECClient \"")
     os.system("ssh " + slave + " \"sudo service redis_6379 restart\"")
-    command="scp "+home_dir+"/OECAgent "+slave+":"+home_dir+"/"
+    # command="scp "+home_dir+"/OECAgent "+slave+":"+home_dir+"/"
     os.system(command)
-    command="scp "+home_dir+"/OECClient "+slave+":"+home_dir+"/"
+    # command="scp "+home_dir+"/OECClient "+slave+":"+home_dir+"/"
     os.system(command)
     # command="scp "+home_dir+"/HDFSClient "+slave+":"+home_dir+"/"
     # os.system(command)

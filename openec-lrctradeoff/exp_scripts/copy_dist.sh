@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 # usage: copy file/dir to all nodes
 
 if [ "$#" != "2" ]; then
