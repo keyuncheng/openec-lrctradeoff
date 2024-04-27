@@ -1,4 +1,6 @@
 # Scripts for experiments in distributed settings
+TO be updated
+
 login.txt: logins for nodes. Format: <ip> <username> <password>
 config.sh: configuration file
 set_login.sh: create user on each node; set root privilege
