@@ -13,4 +13,6 @@ for idx in $(seq 0 $((num_nodes-1))); do
     
     echo ssh -n $user@$ip "echo $passwd | sudo -S apt-get -y install expect"
     ssh -n $user@$ip "echo $passwd | sudo -S apt-get -y install expect"
+    # ssh -n $user@$ip "rm -rf /home/kycheng/hadoop-3.3.4/etc/hadoop/hadoop"
+    # ssh -n $user@$ip "echo $HADOOP_HOME"
 done

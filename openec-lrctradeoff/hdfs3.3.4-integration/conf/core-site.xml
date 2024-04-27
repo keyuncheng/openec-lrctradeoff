@@ -19,4 +19,5 @@
 <configuration>
 <property><name>fs.defaultFS</name><value>hdfs://192.168.0.13:9000</value></property>
 <property><name>hadoop.tmp.dir</name><value>/home/kycheng/hadoop-3.3.4</value></property>
+<property><name>net.topology.script.file.name</name><value>/home/kycheng/hadoop-3.3.4/etc/hadoop/rack_topology.sh</value></property>
 </configuration>

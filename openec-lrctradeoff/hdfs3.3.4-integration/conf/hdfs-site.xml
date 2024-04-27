@@ -14,5 +14,6 @@
 <property><name>dfs.client.max.block.acquire.failures</name><value>0</value></property>
 <property><name>dfs.namenode.fs-limits.min-block-size</name><value>1024</value></property>
 <property><name>dfs.client-write-packet-size</name><value>131072</value></property>
+<property><name>dfs.namenode.datanode.registration.ip-hostname-check</name><value>false</value></property>
 <property><name>io.file.buffer.size</name><value>131072</value></property>
 </configuration>

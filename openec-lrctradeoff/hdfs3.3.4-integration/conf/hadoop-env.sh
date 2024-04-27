@@ -139,7 +139,7 @@ export HADOOP_CLIENT_OPTS="-Xmx4096m $HADOOP_CLIENT_OPTS"
 # export HADOOP_CLASSPATH="/some/cool/path/on/your/machine"
 
 # Xiaolu comment here
-export HADOOP_CLASSPATH="$HADOOP_HOME/oeclib/*:$JAVA_HOME/lib/*"
+export HADOOP_CLASSPATH="$HADOOP_HOME/oeclib/*:$JAVA_HOME/lib/*:$HADOOP_CLASSPATH"
 
 # Should HADOOP_CLASSPATH be first in the official CLASSPATH?
 # export HADOOP_USER_CLASSPATH_FIRST="yes"

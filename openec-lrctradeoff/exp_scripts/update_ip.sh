@@ -4,8 +4,9 @@ home_dir=$(echo ~)
 proj_dir=${home_dir}/widelrc/openec-lrctradeoff
 config_dir=${proj_dir}/conf
 config_filename=sysSetting.xml
-hadoop_home_dir=$(echo $HADOOP_HOME)
+hadoop_home_dir=${home_dir}/hadoop-3.3.4
 
+echo $hadoop_home_dir
 
 cur_ip=$(ifconfig | grep 192.168.0 | head -1 | sed "s/ *inet [addr:]*\([^ ]*\).*/\1/")
 

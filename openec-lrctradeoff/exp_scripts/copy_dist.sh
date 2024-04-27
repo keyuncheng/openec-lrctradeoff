@@ -17,5 +17,6 @@ for idx in $(seq 0 $((num_nodes-1))); do
     user=${user_list[$idx]}
     passwd=${passwd_list[$idx]}
     
+    echo rsync -av --delete --recursive $src_file $user@$ip:$dst_dir
     rsync -av --delete --recursive $src_file $user@$ip:$dst_dir
 done

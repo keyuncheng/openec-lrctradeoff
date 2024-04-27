@@ -25,6 +25,7 @@ cd $oec_dir/hdfs3.3.4-integration
 sed -i "s%^HADOOP\_SRC\_DIR.*%HADOOP\_SRC\_DIR=${pkg_dir}\/hadoop-3.3.4-src%g" install.sh
 bash install.sh
 cp -r $pkg_dir/hadoop-3.3.4-src/hadoop-dist/target/hadoop-3.3.4 $home_dir
+cp -r $pkg_dir/hadoop-3.3.4-src/oeclib $home_dir/hadoop-3.3.4
 
 # compile code
 cd $oec_dir

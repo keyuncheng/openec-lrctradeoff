@@ -19,7 +19,7 @@ fi
 # performance benchmark
 /usr/bin/expect <(cat << EOF
 set timeout -1 
-spawn sudo apt-get -y install fio lshw iperf
+spawn sudo apt-get -y install net-tools fio lshw iperf python2.7
 expect {
     "*password" { send "$passwd\n"; exp_continue }
     "*continue?" { send "Y\n"; exp_continue }
