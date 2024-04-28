@@ -32,7 +32,7 @@ FSObjInputStream::FSObjInputStream(Config *conf, string objname, UnderFS *fs)
     int len = _underfs->pReadFile(_underfile, 0, tmp_buf, 1);
     if (len <= 0)
     {
-      cout << "FSObjInputStream::constructor.read check fail, file " << objname << " is corrupted" << endl;
+      // cout << "FSObjInputStream::constructor.read check fail, file " << objname << " is corrupted" << endl;
       _exist = false;
     }
     else

@@ -826,13 +826,18 @@ void ECDAG::Opt3(unordered_map<int, string> n2Rack)
         isProot = true;
       string prack = n2Rack[parent];
 
-      // clean ref for child
+      // // clean ref for child
+      // for (auto curcid : curChilds)
+      // {
+      //   ECNode *curcnode = _ecNodeMap[curcid];
+      //   curcnode->cleanRefNumFor(curcid);
+      // }
+      // decrease ref for child
       for (auto curcid : curChilds)
       {
         ECNode *curcnode = _ecNodeMap[curcid];
-        curcnode->cleanRefNumFor(curcid);
+        curcnode->decRefNumFor(curcid);
       }
-
       // cross-rack symbols and coefficients
       vector<int> cr_symbols;
       vector<int> cr_coefs;

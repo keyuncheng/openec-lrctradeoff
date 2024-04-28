@@ -1254,7 +1254,6 @@ void Coordinator::optOfflineDegrade(string lostobj, unsigned int clientIp, Offli
   }
 
   vector<int> toposeq = ecdag->toposort();
-  ecdag->dump();
 
   // prepare cid2ip, for parseForOEC
   unordered_map<int, unsigned int> cid2ip;
@@ -1262,9 +1261,15 @@ void Coordinator::optOfflineDegrade(string lostobj, unsigned int clientIp, Offli
   {
     int cidx = toposeq[i];
     ECNode *node = ecdag->getNode(cidx);
-    vector<unsigned int> candidates = node->candidateIps(sid2ip, cid2ip, _conf->_agentsIPs, ecn, eck, ecw, locality);
+    // vector<unsigned int> candidates = node->candidateIps(sid2ip, cid2ip, _conf->_agentsIPs, ecn, eck, ecw, locality);
+    // // choose from candidates
+    // unsigned int curip = chooseFromCandidates(candidates, _conf->_repair_policy, "repair");
+    
+    // hacked: modify ip selection
+    vector<unsigned int> candidates = node->candidateIps(sid2ip, cid2ip, _conf->_agentsIPs, ecn, eck, ecw, 1);
     // choose from candidates
-    unsigned int curip = chooseFromCandidates(candidates, _conf->_repair_policy, "repair");
+    unsigned int curip = candidates[0]; 
+
     cid2ip.insert(make_pair(cidx, curip));
   }
 
@@ -1272,8 +1277,10 @@ void Coordinator::optOfflineDegrade(string lostobj, unsigned int clientIp, Offli
   int basesizeMB = ecpool->getBasesize();
   int pktnum = basesizeMB * 1048576 / _conf->_pktSize;
 
-  // optimize
-  ecdag->optimize2(opt, cid2ip, _conf->_ip2Rack, ecn, eck, ecw, sid2ip, _conf->_agentsIPs, locality);
+  // optimize (hacked)
+  // ecdag->optimize2(opt, cid2ip, _conf->_ip2Rack, ecn, eck, ecw, sid2ip, _conf->_agentsIPs, locality);
+  ecdag->optimize2(opt, cid2ip, _conf->_ip2Rack, ecn, eck, ecw, sid2ip, _conf->_agentsIPs, 1);
+  ecdag->dump();
 
   // 6. parse for oec
   unordered_map<int, AGCommand *> agCmds = ecdag->parseForOEC(cid2ip, stripename, ecn, eck, ecw, pktnum, objlist);
