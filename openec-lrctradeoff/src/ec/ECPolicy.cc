@@ -69,3 +69,13 @@ int ECPolicy::getOpt()
 {
   return _opt;
 }
+
+string ECPolicy::getClassName()
+{
+  return _classname;
+}
+
+vector<string> ECPolicy::getParams()
+{
+  return _param;
+}

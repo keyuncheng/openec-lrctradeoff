@@ -165,6 +165,12 @@ void Coordinator::registerOnlineEC(unsigned int clientIp, string filename, strin
       else
         curIp = chooseFromCandidates(candidates, _conf->_data_policy, "data");
     }
+    // hack: fix for opt=3 (hierarchical setting): hard code the ip to the agent ip
+    if (ecpolicy->getOpt() == 3)
+    {
+      curIp = _conf->_agentsIPs[i];
+    }
+
     placed.push_back(i);
     ips.push_back(curIp);
   }
@@ -1156,6 +1162,70 @@ void Coordinator::optOfflineDegrade(string lostobj, unsigned int clientIp, Offli
         availcidx.push_back(i * ecw + j);
     }
   }
+
+  // hack (start): special handling for AzureLRCTradeoff: overwride integrity and availacidx
+  if (ecpolicy->getClassName() == "AzureLRCTradeoff")
+  {
+    // check if it's maintenance
+    vector<string> params = ecpolicy->getParams();
+    int approach = atoi(params[3].c_str());
+    if (approach == 1)
+    {
+      printf("special handling for maintenance for AzureLRCTradeoff (%u, %u)\n", ec->_n, ec->_k);
+
+      vector<vector<int>> group;
+      ec->Place(group);
+
+      // get failed group id
+      int failed_gp_id = -1;
+
+      for (int gp_id = 0; gp_id < group.size(); gp_id++)
+      {
+        for (auto bid : group[gp_id])
+        {
+          if (bid == lostidx)
+          {
+            failed_gp_id = gp_id;
+            break;
+          }
+        }
+
+        if (failed_gp_id != -1)
+        {
+          break;
+        }
+      }
+
+      // update integrity and availcidx
+      integrity.clear();
+      availcidx.clear();
+
+      for (int i = 0; i < ecn; i++)
+      {
+        if (i == lostidx)
+        {
+          integrity.push_back(0);
+        }
+        else
+        {
+          // if we cannot find the block in the failed group
+          if (find(group[failed_gp_id].begin(), group[failed_gp_id].end(), i) == group[failed_gp_id].end())
+          {
+            integrity.push_back(1);
+            for (int j = 0; j < ecw; j++)
+            {
+              availcidx.push_back(i * ecw + j);
+            }
+          }
+          else
+          {
+            integrity.push_back(0);
+          }
+        }
+      }
+    }
+  }
+  // hack (end)
 
   // create ecdag
   ECDAG *ecdag = ec->Decode(availcidx, toreccidx);

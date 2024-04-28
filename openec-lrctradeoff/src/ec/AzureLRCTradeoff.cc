@@ -6,7 +6,7 @@ AzureLRCTradeoff::AzureLRCTradeoff(int n, int k, int w, int opt, vector<string> 
     _k = k;
     _w = w;
     _opt = opt;
-    if (param.size() != 3)
+    if (param.size() != 4)
     {
         printf("AzureLRCTradeoff::error invalid params (l,g,eta)\n");
     }
@@ -15,9 +15,11 @@ AzureLRCTradeoff::AzureLRCTradeoff(int n, int k, int w, int opt, vector<string> 
     // 1. l (number of local parity blocks)
     // 2. g (number of local parity blocks)
     // 3. eta (tradeoff data placement parameter)
+    // 4. approach (used in distributed mode only); 0: repair; 1: maintenance)
     _l = atoi(param[0].c_str());
     _g = atoi(param[1].c_str());
     _eta = atoi(param[2].c_str());
+    _approach = atoi(param[3].c_str());
 
     _encode_matrix = (int *)malloc(_n * _k * sizeof(int));
     generateMatrix(_encode_matrix, _k, _l, _g, 8);
@@ -95,11 +97,11 @@ ECDAG *AzureLRCTradeoff::Decode(vector<int> from, vector<int> to)
 
     if (to.size() == 1)
     {
-        if (from.size() == _n - 1)
+        if (_approach == 0)
         {
             return DecodeSingleRepair(from, to);
         }
-        else
+        else if (_approach == 1)
         {
             // check if satisfy maintenance constraints
             if (checkMaintenanceConstraints(from, to) == true)
@@ -112,6 +114,12 @@ ECDAG *AzureLRCTradeoff::Decode(vector<int> from, vector<int> to)
                 ECDAG *ecdag = new ECDAG();
                 return ecdag;
             }
+        }
+        else
+        {
+            printf("AzureLRCTradeoff:: unsupported approach %d\n", _approach);
+            ECDAG *ecdag = new ECDAG();
+            return ecdag;
         }
     }
     else
@@ -342,7 +350,7 @@ ECDAG *AzureLRCTradeoff::DecodeGlobalMaintenance(vector<int> from, vector<int> t
     int *rec_matrix = (int *)malloc(failed_dbs.size() * failed_dbs.size() * sizeof(int));
     memset(rec_matrix, 0, failed_dbs.size() * failed_dbs.size() * sizeof(int));
     int rec_mtx_rid = 0;
-    
+
     for (int lg_id = 0; lg_id < _l; lg_id++)
     { // check each local group
         auto &lg = failed_rack_blk_lg[lg_id];

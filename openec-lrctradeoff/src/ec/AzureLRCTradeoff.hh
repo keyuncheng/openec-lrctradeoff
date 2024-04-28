@@ -13,9 +13,10 @@ class AzureLRCTradeoff : public ECBase
 private:
     int _l;
     int _g;
-    int *_encode_matrix = NULL;
-
     int _eta;
+    int _approach; // 0: repair; 1: maintenance;
+
+    int *_encode_matrix = NULL;
 
     void generateMatrix(int *matrix, int k, int l, int r, int w);
 

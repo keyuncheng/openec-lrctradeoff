@@ -33,6 +33,8 @@ public:
   int getW();
   bool getLocality();
   int getOpt();
+  string getClassName();
+  vector<string> getParams();
 };
 
 #endif
