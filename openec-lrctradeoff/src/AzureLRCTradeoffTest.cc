@@ -25,7 +25,7 @@ double getCurrentTime()
 int main(int argc, char **argv)
 {
 
-    if (argc < 7)
+    if (argc < 8)
     {
         usage();
         return 0;
@@ -40,7 +40,13 @@ int main(int argc, char **argv)
     string mode = string(argv[6]);
     int failed_id = atoi(argv[7]);
 
-    string ecid = "AzureLRCTradeoff_" + to_string(ecn) + "_" + to_string(eck) + "_" + to_string(eceta);
+    string ecid = "AT_" + to_string(ecn) + "_" + to_string(eck) + "_" + to_string(eceta);
+    
+    if (mode == "repair") {
+        ecid = ecid + "_r";
+    } else if (mode == "maintenance") {
+        ecid = ecid + "_m";
+    }
 
     string confpath = "conf/sysSetting.xml";
     Config *conf = new Config(confpath);
