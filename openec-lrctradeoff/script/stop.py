@@ -31,8 +31,8 @@ for attr in res:
 # stop
 
 print "stop coordinator"
-os.system("redis-cli flushall")
 os.system("killall OECCoordinator")
+os.system("redis-cli flushall")
 
 for slave in slavelist:
     print "stop slave on " + slave
