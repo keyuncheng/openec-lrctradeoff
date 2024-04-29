@@ -73,8 +73,8 @@ def main():
             for node_ip, rack_id in node_to_rack.items():
                 if cur_node_ip == node_ip:
                     continue
-                # need to set cross-rack bandwidth
-                if cur_rack_id != rack_id:
+                # need to set inner-rack bandwidth
+                if cur_rack_id == rack_id:
                     cmd = "ssh {}@{} \"cd {} && echo {} | sudo -S bash {} {} {}\"".format(user_name, cur_node_ip, exp_scripts_dir, user_passwd, set_bw_script, node_ip, cr_bw)
                     exec_cmd(cmd, exec=True)
         else:
