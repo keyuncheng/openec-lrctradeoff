@@ -11,6 +11,7 @@ exp_scripts_dir = "{}/exp_scripts".format(oec_dir)
 hdfs_dir = "{}/hadoop-3.3.4".format(home_dir)
 hdfs_config = "rack_topology.data"
 clear_bw_script = "clear_bw.sh"
+init_bw_script = "init_bw.sh"
 set_bw_script = "set_bw.sh"
 user_name = "kycheng"
 user_passwd = "kycheng"
@@ -66,6 +67,8 @@ def main():
             exec_cmd(cmd, exec=True)
         elif option == "set":
             print("set bandwidth for node {} (rack {})".format(cur_node_ip, cur_rack_id))
+            cmd = "ssh {}@{} \"cd {} && echo {} | sudo -S bash {} {}\"".format(user_name, cur_node_ip, exp_scripts_dir, user_passwd, init_bw_script, cr_bw)
+            exec_cmd(cmd, exec=True)
 
             for node_ip, rack_id in node_to_rack.items():
                 if cur_node_ip == node_ip:
