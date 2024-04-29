@@ -5,7 +5,7 @@
 username=kycheng
 passwd=kycheng
 
-home_dir=/home/$username
+home_dir=$(echo ~)
 pkg_dir=$home_dir/packages
 proj_dir=$home_dir/widelrc
 oec_dir=$proj_dir/openec-lrctradeoff

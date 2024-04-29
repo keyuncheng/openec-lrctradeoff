@@ -1,7 +1,8 @@
 import os
 import subprocess
 
-root_passwd="kycheng"
+# user password (for running sudo command)
+user_passwd="kycheng"
 
 filepath=os.path.realpath(__file__)
 script_dir = os.path.dirname(os.path.normpath(filepath))
@@ -38,7 +39,7 @@ for attr in res:
 print "start coordinator"
 os.system("redis-cli flushall")
 os.system("killall OECCoordinator")
-os.system("echo " + root_passwd + " | sudo -S service redis_6379 restart")
+os.system("echo " + user_passwd + " | sudo -S service redis_6379 restart")
 command="cd "+home_dir+"; . script/env.sh "+fstype+"; ./OECCoordinator &> "+home_dir+"/coor_output &"
 
 subprocess.Popen(['/bin/bash', '-c', command])
@@ -47,7 +48,7 @@ for slave in slavelist:
     print "start slave on " + slave
     os.system("ssh " + slave + " \"killall OECAgent \"")
     os.system("ssh " + slave + " \"killall OECClient \"")
-    os.system("ssh " + slave + " \"echo " + root_passwd + " | sudo -S service redis_6379 restart\"")
+    os.system("ssh " + slave + " \"echo " + user_passwd + " | sudo -S service redis_6379 restart\"")
     # command="scp "+home_dir+"/OECAgent "+slave+":"+home_dir+"/"
     # os.system(command)
     # command="scp "+home_dir+"/OECClient "+slave+":"+home_dir+"/"

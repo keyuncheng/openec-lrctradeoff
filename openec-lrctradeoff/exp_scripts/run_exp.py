@@ -9,7 +9,7 @@ import math
 import configparser
 
 def parse_args(cmd_args):
-    arg_parser = argparse.ArgumentParser(description="update experiment settings (HDFS, OpenEC)") 
+    arg_parser = argparse.ArgumentParser(description="run experiment") 
 
     # Input parameters: exp_settings_file
     arg_parser.add_argument("-exp_settings_file", type=str, required=True, help="experiment settings file (.ini)")
@@ -76,6 +76,7 @@ def main():
     exp.pkt_size_byte = int(exp.pkt_size_byte)
     exp.in_bw_Mbps = int(exp.in_bw_Mbps)
     exp.cr_bw_Mbps = int(exp.cr_bw_Mbps)
+    exp.num_runs = int(exp.num_runs)
 
     # cluster settings
     configs.Cluster = DictToObject(configs.Cluster)
