@@ -17,6 +17,11 @@ for idx in $(seq 0 $((num_nodes-1))); do
     
     expect << EOF
 
+    # remove key
+    set timeout 2
+    spawn ssh-keygen -f "/home/$user/.ssh/known_hosts" -R $ip
+    expect eof
+
     # set ssh-copy-id 
     set timeout 2
     spawn ssh-copy-id -f $user@$ip

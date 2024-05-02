@@ -19,7 +19,7 @@ fi
 # performance benchmark
 /usr/bin/expect <(cat << EOF
 set timeout -1 
-spawn sudo apt-get -y install tc net-tools fio lshw iperf python2.7
+spawn sudo apt-get -y install iproute2 net-tools fio lshw iperf python2.7
 expect {
     "*password" { send "$passwd\n"; exp_continue }
     "*continue?" { send "Y\n"; exp_continue }
@@ -127,6 +127,8 @@ cd $pkg_dir
 # wget https://github.com/ceph/gf-complete/archive/refs/heads/master.zip -O gf-complete.zip
 unzip gf-complete.zip
 cd gf-complete-master/
+libtoolize
+autoupdate
 ./autogen.sh
 ./configure
 make
@@ -145,6 +147,8 @@ EOF
 cd $pkg_dir
 tar zxvf isa-l-2.30.0.tar.gz
 cd isa-l-2.30.0/
+libtoolize
+autoupdate
 ./autogen.sh
 ./configure
 make
@@ -192,7 +196,7 @@ EOF
 
 cd $pkg_dir
 # wget https://archive.apache.org/dist/hadoop/common/hadoop-3.3.4/hadoop-3.3.4-src.tar.gz
-tar zxvf hadoop-3.3.4-src.tar.gz
+tar zxf hadoop-3.3.4-src.tar.gz
 
 sed -i '/HADOOP_SRC_DIR=/d' $home_dir/.bashrc
 sed -i '/HADOOP_HOME=/d' $home_dir/.bashrc
