@@ -97,11 +97,11 @@ EOF
 )
 
 
-# dependencies (hiredis v1.0.0)
+# dependencies (hiredis v0.13.3)
 cd $pkg_dir
-# wget https://github.com/redis/hiredis/archive/refs/tags/v1.0.0.tar.gz -O hiredis-1.0.0.tar.gz
-tar zxvf hiredis-1.0.0.tar.gz
-cd hiredis-1.0.0
+# wget https://github.com/redis/hiredis/archive/refs/tags/v0.13.3.tar.gz -O hiredis-0.13.3.tar.gz
+tar zxvf hiredis-0.13.3.tar.gz
+cd hiredis-0.13.3
 make
 /usr/bin/expect <(cat << EOF
 set timeout -1 

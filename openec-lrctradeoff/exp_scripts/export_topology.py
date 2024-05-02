@@ -22,6 +22,9 @@ def parse_args(cmd_args):
     # input parameters
     arg_parser.add_argument("-oec_code_name", type=str, required=True, help="code name in OpenEC (must exist in sysSetting.xml)")
     
+    arg_parser.add_argument("-dn_ids", type=int, nargs="+", required=True, help="data node ids in node login")
+   
+ 
     args = arg_parser.parse_args(cmd_args)
     return args
 
@@ -42,6 +45,8 @@ def main():
 
     # input parameters
     oec_code_name = args.oec_code_name
+    dn_ids = args.dn_ids
+    print(dn_ids)
 
     # read node login file
     node_logins = []
@@ -51,6 +56,8 @@ def main():
                 continue
             arr = line.strip().split(' ')
             node_logins.append(arr)
+
+    data_nodes = [node_logins[item] for item in dn_ids]
     
     # run placement program to get rack info from oec_code
     cmd = "cd {} && ./{} {}".format(oec_dir, placement_prog, oec_code_name)
@@ -82,7 +89,7 @@ def main():
     # update rack ids in oec_config and hdfs_config
     oec_config_path = "{}/conf/{}".format(oec_dir, oec_config)
     hdfs_config_path = "{}/hdfs3.3.4-integration/conf/{}".format(oec_dir, hdfs_config)
-    for node_id, node_login in enumerate(node_logins):
+    for node_id, node_login in enumerate(data_nodes):
         node_ip = node_login[0]
 
         # default rack id

@@ -13,7 +13,7 @@ cd $pkg_dir
 # dependencies (redis v3.2.8)
 wget https://download.redis.io/releases/redis-3.2.8.tar.gz
 
-# dependencies (hiredis v1.0.0)
+# dependencies (hiredis v0.13.3)
 wget https://github.com/redis/hiredis/archive/refs/tags/v0.13.3.tar.gz -O hiredis-0.13.3.tar.gz
 
 # dependencies (gf-complete Ceph's mirror)
