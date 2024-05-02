@@ -215,7 +215,7 @@ export HADOOP_CLASSPATH="$HADOOP_HOME/oeclib/*:$JAVA_HOME/lib/*:$HADOOP_CLASSPAT
 
 # Default log4j setting for interactive commands
 # Java property: hadoop.root.logger
-# export HADOOP_ROOT_LOGGER=INFO,console
+# export HADOOP_ROOT_LOGGER=DEBUG,DRFA
 
 # Default log4j setting for daemons spawned explicitly by
 # --daemon option of hadoop, hdfs, mapred and yarn command.
@@ -304,6 +304,7 @@ export HADOOP_CLASSPATH="$HADOOP_HOME/oeclib/*:$JAVA_HOME/lib/*:$HADOOP_CLASSPAT
 
 # this is the default:
 # export HDFS_NAMENODE_OPTS="-Dhadoop.security.logger=INFO,RFAS"
+# export HADOOP_NAMENODE_OPTS="${HADOOP_NAMENODE_OPTS} -Dhadoop.root.logger=DEBUG,DRFA"
 
 ###
 # SecondaryNameNode specific parameters
@@ -324,6 +325,7 @@ export HADOOP_CLASSPATH="$HADOOP_HOME/oeclib/*:$JAVA_HOME/lib/*:$HADOOP_CLASSPAT
 #
 # This is the default:
 # export HDFS_DATANODE_OPTS="-Dhadoop.security.logger=ERROR,RFAS"
+# export HADOOP_DATANODE_OPTS="${HADOOP_DATANODE_OPTS} -Dhadoop.root.logger=DEBUG,DRFA"
 
 # On secure datanodes, user to run the datanode as after dropping privileges.
 # This **MUST** be uncommented to enable secure HDFS if using privileged ports
