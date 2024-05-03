@@ -1,6 +1,13 @@
 #!/bin/bash
+# update configs: ip, block size and packet size
 
-source "./config.sh"
+if [ "$#" != "2" ]; then
+	echo "Usage: $0 block_size (Byte) packet_size (Byte)" >&2
+    exit 1
+fi
+
+block_size=$1
+packet_size=$2
 
 home_dir=$(echo ~)
 proj_dir=${home_dir}/widelrc/openec-lrctradeoff
@@ -16,3 +23,4 @@ cp -r ${hdfs_config_dir}/* ${hadoop_home_dir}/etc/hadoop
 chmod 777 ${hadoop_home_dir}/etc/hadoop/rack_topology.sh
 bash copy_dist.sh ${hadoop_home_dir}/etc/hadoop ${hadoop_home_dir}/etc
 bash run_script_dist.sh update_ip.sh
+bash run_script_dist.sh update_sizes.sh $block_size $packet_size

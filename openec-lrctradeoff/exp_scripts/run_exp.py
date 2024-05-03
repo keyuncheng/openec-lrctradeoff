@@ -26,19 +26,6 @@ def exec_cmd(cmd, exec=False):
         print(msg)
     return msg
 
-def check_params(configs):
-    exp = configs.Experiment
-    cluster = configs.Cluster
-
-    if exp.eck % exp.ecl != 0:
-        print("Error: k should be a multiple of l")
-        return False
-    
-    if exp.eck + exp.ecl + exp.ecg > len(cluster.nodes) - 1:
-        print("Error: insufficient number of nodes (k+l+g+1 {} > number of nodes {})".format(exp.eck + exp.ecl + exp.ecg, len(cluster.nodes) - 1))
-        return False
-    return True
-
 class MyConfigParser(configparser.ConfigParser):
     def __init__(self, defaults=None):
         configparser.ConfigParser.__init__(self, defaults=None)
