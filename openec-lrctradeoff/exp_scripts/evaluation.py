@@ -17,13 +17,13 @@ user_passwd = "kycheng"
 def parse_args(cmd_args):
     arg_parser = argparse.ArgumentParser(description="run experiment") 
 
-    # Input parameters: exp_settings_file
-    arg_parser.add_argument("-exp_settings_file", type=str, required=True, help="experiment settings file (.ini)")
+    # Input parameters: eval_settings_file
+    arg_parser.add_argument("-eval_settings_file", type=str, required=True, help="evaluation settings file (.ini)")
     
     args = arg_parser.parse_args(cmd_args)
     return args
 
-def exec_cmd(cmd, exec=False):
+def exec_cmd(cmd, exec=True):
     print("Execute Command: {}".format(cmd))
     msg = ""
     if exec == True:
@@ -71,7 +71,7 @@ def find_block_id_and_ip(stripe_name, block_id):
     oec_block_name = "/{}_oecobj_{}".format(stripe_name, block_id)
     find_node_ip_and_block_cmd = "hdfs fsck {} -files -blocks -locations | grep Datanode".format(oec_block_name)
     
-    find_ip_result = exec_cmd(find_node_ip_and_block_cmd, exec=False)
+    find_ip_result = exec_cmd(find_node_ip_and_block_cmd, exec=True)
 
     node_ip = "undefined_ip"
     block_name = "blk_undefined"
@@ -93,30 +93,30 @@ def find_block_id_and_ip(stripe_name, block_id):
     ip_origin = find_ip_result[ip_begin:ip_end]
     ip_split = ip_origin.split(":")
     node_ip = ip_split[0]
-    print("found block for stripe_name: {}: {} {}", oec_block_name, node_ip, block_name)
+    print("found block for stripe_name: {}: {} {}".format(oec_block_name, node_ip, block_name))
     return node_ip, block_name
 
 def delete_node_block(hdfs_dir, node_ip, block_name = "*"):
     print("Start to delete block: " + node_ip + ", block: " + block_name)
-    delete_cmd = "ssh " + node_ip + " \"cd {}/dfs/data/current/BP-*/current/finalized/subdir0/subdir0/ && rm {}\"".format(hdfs_dir, block_name)
-    exec_cmd(delete_cmd, exec=False)
+    delete_cmd = "ssh " + node_ip + " \"cd {}/dfs/data/current/BP-*/current/finalized/subdir0/subdir0/ && rm blk_{}\"".format(hdfs_dir, block_name)
+    exec_cmd(delete_cmd, exec=True)
 
     time.sleep(2)
     print("Delete block finished: " + node_ip + ", block: " + block_name)
 
 def check_hdfs_blocks():
     hdfs_check_blocks_cmd="hdfs fsck -list-corruptfileblocks"
-    ret_val = exec_cmd(hdfs_check_blocks_cmd, exec=False)
+    ret_val = exec_cmd(hdfs_check_blocks_cmd, exec=True)
     print(ret_val)
 
 
-def read_file_block(filename, num_runs):
+def read_file_block(user_name, agent_ip, oec_dir, filename, num_runs):
     print("Start to read file {} for {} runs".format(filename, num_runs))
 
     read_time_list = []
     for i in range(num_runs):
-        read_cmd = "./OECClient read {} {}".format("/" + filename, filename)
-        ret_val = exec_cmd(read_cmd, exec=False)
+        read_cmd = "ssh {}@{} \"cd {} && ./OECClient read {} {}\"".format(user_name, agent_ip, oec_dir, "/" + filename, filename)
+        ret_val = exec_cmd(read_cmd, exec=True)
 
         read_time = -1
 
@@ -147,11 +147,11 @@ def main():
     start_exp_time = time.time()
 
     # Input parameters: exp_settings_file
-    exp_settings_file = args.exp_settings_file
+    eval_settings_file = args.eval_settings_file
 
     # 0. Load configurations
     configs_raw = MyConfigParser()
-    configs_raw.read(exp_settings_file)
+    configs_raw.read(eval_settings_file)
 
     # 0.1 parse configurations
     configs = DictToObject({section: dict(configs_raw[section]) for section in configs_raw.sections()})
@@ -201,18 +201,19 @@ def main():
 
     # set network topology
     cmd = "cd {} && python3 export_topology.py -oec_code_name {} -dn_ids {}".format(exp_script_dir, eval_code_name_repair, ' '.join(str(item) for item in cluster.agent_ids))
-    exec_cmd(cmd, exec=False)
+    exec_cmd(cmd, exec=True)
 
     # update configurations
     cmd = "cd {} && bash update_configs_dist.sh {} {}".format(exp_script_dir, exp.block_size_byte, exp.pkt_size_byte)
-    exec_cmd(cmd, exec=False)
+    exec_cmd(cmd, exec=True)
 
     for block_id in range(exp.eck):
+    # for block_id in range(1):
         print("Start evaluation for code {} and {} block {}".format(eval_code_name_repair, eval_code_name_maintenance, block_id))
 
         # restart hdfs and openec
         cmd = "cd {} && bash restart_oec.sh".format(exp_script_dir)
-        exec_cmd(cmd, exec=False)
+        exec_cmd(cmd, exec=True)
 
         time.sleep(1)
 
@@ -229,18 +230,18 @@ def main():
         else:
             print("data block not exists: {}; generate".format(input_data_filename))
             cmd = "ssh {}@{} \"dd if=/dev/urandom of={} bs={}MiB count={} iflag=fullblock\"".format(user_name, agent_ip, input_data_filename, block_size_MiB, exp.eck)
-            exec_cmd(cmd, exec=False)
+            exec_cmd(cmd, exec=True)
 
         stripe_name_repair = "repair_" + eval_code_name_repair
         stripe_name_maintenance = "maintenance_" + eval_code_name_maintenance
 
         # write stripe to hdfs on the node storing block id
         cmd = "ssh {}@{} \"cd {} && ./OECClient write {} {} {} online {}\"".format(user_name, agent_ip, oec_dir, input_data_filename, "/" + stripe_name_repair, eval_code_name_repair, input_data_size_MiB)
-        exec_cmd(cmd, exec=False)
+        exec_cmd(cmd, exec=True)
         time.sleep(1)
 
         cmd = "ssh {}@{} \"cd {} && ./OECClient write {} {} {} online {}\"".format(user_name, agent_ip, oec_dir, input_data_filename, "/" + stripe_name_maintenance, eval_code_name_maintenance, input_data_size_MiB)
-        exec_cmd(cmd, exec=False)
+        exec_cmd(cmd, exec=True)
         time.sleep(1)
 
         # delete node block
@@ -253,42 +254,44 @@ def main():
         node_ip, block_name = find_block_id_and_ip(stripe_name_maintenance, block_id)
         delete_node_block(cluster.hdfs_dir, node_ip, block_name)
 
-        time.sleep(3)
+        time.sleep(10)
         check_hdfs_blocks()
 
         # set cross-rack bandwidth
         cmd = "cd {} && python3 set_topology_cluster.py -option set -cr_bw {} -gw_ip {}".format(exp_script_dir, exp.cr_bw_Kbps, cluster.nodes[cluster.gateway_id][0])
-        exec_cmd(cmd, exec=False)
+        exec_cmd(cmd, exec=True)
 
         # degraded read file
         read_filename_repair = "{}_{}".format(stripe_name_repair, block_id)
-        read_repair_time_list = read_file_block(read_filename_repair, exp.num_runs)
+        read_repair_time_list = read_file_block(user_name, agent_ip, oec_dir, read_filename_repair, exp.num_runs)
 
         read_filename_maintenance = "{}_{}".format(stripe_name_maintenance, block_id)
-        read_maintenance_time_list = read_file_block(read_filename_maintenance, exp.num_runs)
+        read_maintenance_time_list = read_file_block(user_name, agent_ip, oec_dir, read_filename_maintenance, exp.num_runs)
 
         # save results
-        result_save_foler_repair = "{}/eval_results/{}/".format(cluster.proj_dir, eval_code_name_repair)
-        os.makedirs(result_save_foler_repair, exist_ok=True)
-        result_save_path = result_save_foler_repair + "result.json"
-        # with open(result_save_path, 'w',encoding='utf8') as f:
-        #     f.write(" ".join(str(item) for item in read_repair_time_list) +
-        #     "\n")
-        
+        result_save_folder_repair = "{}/eval_results/{}/".format(cluster.proj_dir, eval_code_name_repair)
+        Path(result_save_folder_repair).mkdir(parents=True, exist_ok=True)
+        result_save_path = result_save_folder_repair + "block_{}.json".format(block_id)
+        with open(result_save_path, 'w',encoding='utf8') as f:
+            f.write(" ".join(str(item) for item in read_repair_time_list) +
+            "\n")
+        print("result for code {} block {}: {}".format(eval_code_name_repair, block_id, " ".join(str(item) for item in read_repair_time_list)))    
         print("save {} result in {}".format(eval_code_name_repair, result_save_path))
 
-        result_save_foler_maintenance = "{}/eval_results/{}/".format(cluster.proj_dir, eval_code_name_maintenance)
-        os.makedirs(result_save_foler_maintenance, exist_ok=True)
-        result_save_path = result_save_foler_maintenance + "result.json"
-        # with open(result_save_path, 'w',encoding='utf8') as f:
-        #     f.write(" ".join(str(item) for item in
-        #     read_maintenance_time_list) + "\n")
-        
-        print("save {} result in {}".format(eval_code_name_repair, result_save_path))
+        result_save_folder_maintenance = "{}/eval_results/{}/".format(cluster.proj_dir, eval_code_name_maintenance)
+        Path(result_save_folder_maintenance).mkdir(parents=True, exist_ok=True)
+        result_save_path = result_save_folder_maintenance + "block_{}.json".format(block_id)
+        with open(result_save_path, 'w',encoding='utf8') as f:
+            f.write(" ".join(str(item) for item in
+            read_maintenance_time_list) + "\n")
+       
+ 
+        print("result for code {} block {}: {}".format(eval_code_name_maintenance, block_id, " ".join(str(item) for item in read_maintenance_time_list)))
+        print("save {} result in {}".format(eval_code_name_maintenance, result_save_path))
 
         # clear cross-rack bandwidth
         cmd = "cd {} && python3 set_topology_cluster.py -option clear -cr_bw {} -gw_ip {}".format(exp_script_dir, exp.cr_bw_Kbps, cluster.nodes[cluster.gateway_id][0])
-        exec_cmd(cmd, exec=False)
+        exec_cmd(cmd, exec=True)
 
         print("Finished evaluation for code {} and {} block {}".format(eval_code_name_repair, eval_code_name_maintenance, block_id))
 
