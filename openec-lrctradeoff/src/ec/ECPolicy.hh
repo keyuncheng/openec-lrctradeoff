@@ -5,6 +5,8 @@
 #include "RSCONV.hh"
 #include "AzureLRCFlat.hh"
 #include "AzureLRCTradeoff.hh"
+#include "AzureLRCOptR1022.hh"
+#include "AzureLRCOptM1022.hh"
 
 #include "../inc/include.hh"
 

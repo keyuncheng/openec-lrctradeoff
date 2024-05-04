@@ -1164,14 +1164,14 @@ void Coordinator::optOfflineDegrade(string lostobj, unsigned int clientIp, Offli
   }
 
   // hack (start): special handling for AzureLRCTradeoff: overwride integrity and availacidx
-  if (ecpolicy->getClassName() == "AzureLRCTradeoff")
+  if (ecpolicy->getClassName() == "AzureLRCFlat" || ecpolicy->getClassName() == "AzureLRCTradeoff" || ecpolicy->getClassName() == "AzureLRCOptR1022" || ecpolicy->getClassName() == "AzureLRCOptM1022")
   {
     // check if it's maintenance
     vector<string> params = ecpolicy->getParams();
     int approach = atoi(params[3].c_str());
     if (approach == 1)
     {
-      printf("special handling for maintenance for AzureLRCTradeoff (%u, %u)\n", ec->_n, ec->_k);
+      printf("special handling for maintenance for %s (%u, %u)\n", ecpolicy->getClassName().c_str(), ec->_n, ec->_k);
 
       vector<vector<int>> group;
       ec->Place(group);
@@ -1264,11 +1264,11 @@ void Coordinator::optOfflineDegrade(string lostobj, unsigned int clientIp, Offli
     // vector<unsigned int> candidates = node->candidateIps(sid2ip, cid2ip, _conf->_agentsIPs, ecn, eck, ecw, locality);
     // // choose from candidates
     // unsigned int curip = chooseFromCandidates(candidates, _conf->_repair_policy, "repair");
-    
+
     // hacked: modify ip selection
     vector<unsigned int> candidates = node->candidateIps(sid2ip, cid2ip, _conf->_agentsIPs, ecn, eck, ecw, 1);
     // choose from candidates
-    unsigned int curip = candidates[0]; 
+    unsigned int curip = candidates[0];
 
     cid2ip.insert(make_pair(cidx, curip));
   }

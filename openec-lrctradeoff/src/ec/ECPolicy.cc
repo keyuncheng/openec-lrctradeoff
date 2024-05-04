@@ -31,6 +31,16 @@ ECBase *ECPolicy::createECClass()
     //    toret = new AzureLRCTradeoff(_n, _k, _w, _locality, _opt, _param);
     toret = new AzureLRCTradeoff(_n, _k, _w, _opt, _param);
   }
+  else if (_classname == "AzureLRCOptR1022")
+  {
+    //    toret = new AzureLRCOptR1022(_n, _k, _w, _locality, _opt, _param);
+    toret = new AzureLRCOptR1022(_n, _k, _w, _opt, _param);
+  }
+  else if (_classname == "AzureLRCOptM1022")
+  {
+    //    toret = new AzureLRCOptM1022(_n, _k, _w, _locality, _opt, _param);
+    toret = new AzureLRCOptM1022(_n, _k, _w, _opt, _param);
+  }
   else
   {
     cout << "unrecognized code, use default RSCONV" << endl;

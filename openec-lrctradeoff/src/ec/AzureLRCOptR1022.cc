@@ -1,30 +1,28 @@
-#include "AzureLRCTradeoff.hh"
+#include "AzureLRCOptR1022.hh"
 
-AzureLRCTradeoff::AzureLRCTradeoff(int n, int k, int w, int opt, vector<string> param)
+AzureLRCOptR1022::AzureLRCOptR1022(int n, int k, int w, int opt, vector<string> param)
 {
     _n = n;
     _k = k;
     _w = w;
     _opt = opt;
-    if (param.size() != 4)
+    if (param.size() != 3)
     {
-        printf("AzureLRCTradeoff::error invalid params (l,g,eta,approach)\n");
+        printf("AzureLRCOptR1022::error invalid params (l,g,approach)\n");
     }
 
     // two parameters in <param>
     // 1. l (number of local parity blocks)
     // 2. g (number of local parity blocks)
-    // 3. eta (tradeoff data placement parameter)
-    // 4. approach (used in distributed mode only); 0: repair; 1: maintenance)
+    // 3. approach (used in distributed mode only); 0: repair; 1: maintenance)
     _l = atoi(param[0].c_str());
     _g = atoi(param[1].c_str());
-    _eta = atoi(param[2].c_str());
-    _approach = atoi(param[3].c_str());
+    _approach = atoi(param[2].c_str());
 
     _encode_matrix = (int *)malloc(_n * _k * sizeof(int));
     generateMatrix(_encode_matrix, _k, _l, _g, 8);
 
-    printf("AzureLRCTradeoff::_encode_matrix:\n");
+    printf("AzureLRCOptR1022::_encode_matrix:\n");
     for (int i = 0; i < _n; i++)
     {
         for (int j = 0; j < _k; j++)
@@ -47,7 +45,27 @@ AzureLRCTradeoff::AzureLRCTradeoff(int n, int k, int w, int opt, vector<string> 
     }
 }
 
-ECDAG *AzureLRCTradeoff::Encode()
+void AzureLRCOptR1022::Place(vector<vector<int>> &group)
+{
+    // specific data placement for AzureLRC(k=10,l=2,g=2)
+    group.resize(5);
+    group[0].push_back(0);
+    group[0].push_back(1);
+    group[0].push_back(2);
+    group[1].push_back(3);
+    group[1].push_back(4);
+    group[1].push_back(10);
+    group[2].push_back(5);
+    group[2].push_back(6);
+    group[2].push_back(7);
+    group[3].push_back(8);
+    group[3].push_back(9);
+    group[3].push_back(10);
+    group[4].push_back(12);
+    group[4].push_back(13);
+}
+
+ECDAG *AzureLRCOptR1022::Encode()
 {
     ECDAG *ecdag = new ECDAG();
     vector<int> data;
@@ -79,7 +97,7 @@ ECDAG *AzureLRCTradeoff::Encode()
     return ecdag;
 }
 
-ECDAG *AzureLRCTradeoff::Decode(vector<int> from, vector<int> to)
+ECDAG *AzureLRCOptR1022::Decode(vector<int> from, vector<int> to)
 {
     printf("from: ");
     for (auto item : from)
@@ -110,27 +128,27 @@ ECDAG *AzureLRCTradeoff::Decode(vector<int> from, vector<int> to)
             }
             else
             {
-                printf("AzureLRCTradeoff:: unsupported failure for maintenance\n");
+                printf("AzureLRCOptR1022:: unsupported failure for maintenance\n");
                 ECDAG *ecdag = new ECDAG();
                 return ecdag;
             }
         }
         else
         {
-            printf("AzureLRCTradeoff:: unsupported approach %d\n", _approach);
+            printf("AzureLRCOptR1022:: unsupported approach %d\n", _approach);
             ECDAG *ecdag = new ECDAG();
             return ecdag;
         }
     }
     else
     {
-        printf("AzureLRCTradeoff:: multiple failures repair is not implemented\n");
+        printf("AzureLRCOptR1022:: multiple failures repair is not implemented\n");
         ECDAG *ecdag = new ECDAG();
         return ecdag;
     }
 }
 
-ECDAG *AzureLRCTradeoff::DecodeSingleRepair(vector<int> from, vector<int> to)
+ECDAG *AzureLRCOptR1022::DecodeSingleRepair(vector<int> from, vector<int> to)
 {
     printf("DecodeSingleRepair::decode with single block repair\n");
 
@@ -184,7 +202,7 @@ ECDAG *AzureLRCTradeoff::DecodeSingleRepair(vector<int> from, vector<int> to)
     return ecdag;
 }
 
-ECDAG *AzureLRCTradeoff::DecodeMaintenance(vector<int> from, vector<int> to)
+ECDAG *AzureLRCOptR1022::DecodeMaintenance(vector<int> from, vector<int> to)
 {
     printf("DecodeMaintenance::decode with maintenance\n");
 
@@ -240,14 +258,14 @@ ECDAG *AzureLRCTradeoff::DecodeMaintenance(vector<int> from, vector<int> to)
     }
     else
     {
-        printf("AzureLRCTradeoff:: maintenance for parity blocks is not implemented\n");
+        printf("AzureLRCOptR1022:: maintenance for parity blocks is not implemented\n");
 
         ECDAG *ecdag = new ECDAG();
         return ecdag;
     }
 }
 
-ECDAG *AzureLRCTradeoff::DecodeLocalMaintenance(vector<int> from, vector<int> to)
+ECDAG *AzureLRCOptR1022::DecodeLocalMaintenance(vector<int> from, vector<int> to)
 {
     printf("DecodeLocalMaintenance::decode with local maintenance\n");
 
@@ -285,7 +303,7 @@ ECDAG *AzureLRCTradeoff::DecodeLocalMaintenance(vector<int> from, vector<int> to
     return ecdag;
 }
 
-ECDAG *AzureLRCTradeoff::DecodeGlobalMaintenance(vector<int> from, vector<int> to)
+ECDAG *AzureLRCOptR1022::DecodeGlobalMaintenance(vector<int> from, vector<int> to)
 {
     printf("DecodeGlobalMaintenance::decode with global maintenance\n");
 
@@ -495,11 +513,11 @@ ECDAG *AzureLRCTradeoff::DecodeGlobalMaintenance(vector<int> from, vector<int> t
     // check if the number of virtual symbols are correct
     if (vir_syms.size() != failed_dbs.size())
     {
-        printf("AzureLRCTradeoff:: incorrect number of virtual symbols: %ld, %ld\n", failed_dbs.size(), vir_syms.size());
+        printf("AzureLRCOptR1022:: incorrect number of virtual symbols: %ld, %ld\n", failed_dbs.size(), vir_syms.size());
         return ecdag;
     }
 
-    printf("AzureLRCTradeoff::rec_matrix:\n");
+    printf("AzureLRCOptR1022::rec_matrix:\n");
     for (int i = 0; i < failed_dbs.size(); i++)
     {
         for (int j = 0; j < failed_dbs.size(); j++)
@@ -514,7 +532,7 @@ ECDAG *AzureLRCTradeoff::DecodeGlobalMaintenance(vector<int> from, vector<int> t
     int *inv_rec_matrix = (int *)malloc(failed_dbs.size() * failed_dbs.size() * sizeof(int));
     jerasure_invert_matrix(rec_matrix, inv_rec_matrix, failed_dbs.size(), 8);
 
-    printf("AzureLRCTradeoff::inv_rec_matrix:\n");
+    printf("AzureLRCOptR1022::inv_rec_matrix:\n");
     for (int i = 0; i < failed_dbs.size(); i++)
     {
         for (int j = 0; j < failed_dbs.size(); j++)
@@ -543,7 +561,7 @@ ECDAG *AzureLRCTradeoff::DecodeGlobalMaintenance(vector<int> from, vector<int> t
     return ecdag;
 }
 
-bool AzureLRCTradeoff::checkMaintenanceConstraints(vector<int> from, vector<int> to)
+bool AzureLRCOptR1022::checkMaintenanceConstraints(vector<int> from, vector<int> to)
 {
     int failed_blk_id = to[0];
 
@@ -573,7 +591,7 @@ bool AzureLRCTradeoff::checkMaintenanceConstraints(vector<int> from, vector<int>
     return ret_val;
 }
 
-int AzureLRCTradeoff::getResidingGroup(int blk_id)
+int AzureLRCOptR1022::getResidingGroup(int blk_id)
 {
     int reside_gp_id = -1;
     vector<vector<int>> group;
@@ -598,7 +616,7 @@ int AzureLRCTradeoff::getResidingGroup(int blk_id)
     return reside_gp_id;
 }
 
-void AzureLRCTradeoff::generateMatrix(int *matrix, int k, int l, int r, int w)
+void AzureLRCOptR1022::generateMatrix(int *matrix, int k, int l, int r, int w)
 {
     int n = k + l + r;
     memset(matrix, 0, n * k * sizeof(int));
@@ -628,72 +646,4 @@ void AzureLRCTradeoff::generateMatrix(int *matrix, int k, int l, int r, int w)
             *p++ = galois_single_divide(1, i ^ j, 8);
         }
     }
-}
-
-void AzureLRCTradeoff::Place(vector<vector<int>> &group)
-{
-    int _b = _k / _l;
-
-    // Step 1: collcoate blocks from the same local group
-    for (int lg_id = 0; lg_id < _l; lg_id++)
-    {
-        // collocate data blocks / local parity blocks in the rack
-        for (int cl_id = 0; cl_id < _eta; cl_id++)
-        {
-            vector<int> gp;
-
-            // add at most g+1 blocks from lg_id to the rack
-            for (int idx = 0; idx < _g + 1; idx++)
-            {
-                int db_id = lg_id * _b + cl_id * (_g + 1) + idx;
-                if (db_id < (lg_id + 1) * _b)
-                {
-                    // add data block
-                    gp.push_back(db_id);
-                }
-                else
-                {
-                    // add local parity block
-                    int lpb_id = _k + lg_id;
-                    gp.push_back(lpb_id);
-                }
-            }
-            group.push_back(gp);
-        }
-    }
-
-    // Step 2: collocate blocks from different local groups
-    if (_eta * (_g + 1) < _b) // each local group still have some data blocks to collocate
-    {
-        int num_remaining_db = _b - _eta * (_g + 1);
-        for (int idx = 0; idx < num_remaining_db; idx++)
-        {
-            vector<int> gp;
-            for (int lg_id = 0; lg_id < _l; lg_id++)
-            {
-                int db_id = lg_id * _b + _eta * (_g + 1) + idx;
-                gp.push_back(db_id);
-            }
-            group.push_back(gp);
-        }
-    }
-
-    // Step 3: collocate local parity blocks
-    if (!(_eta * (_g + 1) >= _b && _b % (_g + 1) != 0))
-    {
-        vector<int> gp;
-        for (int lg_id = 0; lg_id < _l; lg_id++)
-        {
-            gp.push_back(_k + lg_id);
-        }
-        group.push_back(gp);
-    }
-
-    // Step 4: collocate global parity blocks
-    vector<int> gp;
-    for (int gpb_id = 0; gpb_id < _g; gpb_id++)
-    {
-        gp.push_back(_k + _l + gpb_id);
-    }
-    group.push_back(gp);
 }
