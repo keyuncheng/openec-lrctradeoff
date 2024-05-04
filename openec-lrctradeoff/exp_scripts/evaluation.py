@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 import math
 import configparser
+import re
 
 # Run this script on the NameNode (Controller)
 user_name = "kycheng"
@@ -129,13 +130,20 @@ def read_file_block(user_name, agent_ip, oec_dir, filename, num_runs):
             print("Error reading object {}".format(filename))
             continue
 
-        begin_p = ret_val.index("duration:") + len("duration:") + 1
-        end_p = ret_val.index("\n")
+        match = re.search(r".*read.overall.duration: (\d+\.\d+|\d+)", ret_val)
+        if not match or not match.groups():
+            print("Error matching the results {}".format(filename))
+            continue
+        # print(line)
+        read_time = float(match.group(1))
 
-        if end_p - begin_p <= 0:
-            print("Error: read file failed")
-        else:
-            read_time = float(ret_val[begin_p:end_p])
+        # begin_p = ret_val.index("duration:") + len("duration:") + 1
+        # end_p = ret_val.index("\n")
+
+        # if end_p - begin_p <= 0:
+        #     print("Error: read file failed")
+        # else:
+        #     read_time = float(ret_val[begin_p:end_p])
 
         read_time_list.append(read_time)
         time.sleep(1)
@@ -303,3 +311,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
