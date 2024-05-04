@@ -27,7 +27,7 @@
 <attribute><name>ec.policy</name>
 <value><ecid>RSCONV_4_3</ecid><class>RSCONV</class><n>4</n><k>3</k><w>1</w><opt>-1</opt></value>
 <value><ecid>RSCONV_14_10</ecid><class>RSCONV</class><n>14</n><k>10</k><w>1</w><opt>-1</opt></value>
-<value><ecid>AF_14_10</ecid><class>AzureLRCFlat</class><n>14</n><k>10</k><w>1</w><opt>3</opt><param>2,2</param></value>
+<value><ecid>AF_14_10</ecid><class>AzureLRCFlat</class><n>14</n><k>10</k><w>1</w><opt>-1</opt><param>2,2</param></value>
 <value><ecid>AT_14_10_0_r</ecid><class>AzureLRCTradeoff</class><n>14</n><k>10</k><w>1</w><opt>3</opt><param>2,2,0,0</param></value>
 <value><ecid>AT_14_10_0_m</ecid><class>AzureLRCTradeoff</class><n>14</n><k>10</k><w>1</w><opt>3</opt><param>2,2,0,1</param></value>
 <value><ecid>AT_14_10_1_r</ecid><class>AzureLRCTradeoff</class><n>14</n><k>10</k><w>1</w><opt>3</opt><param>2,2,1,0</param></value>
