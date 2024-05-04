@@ -64,6 +64,9 @@ def get_eval_code_names(exp):
     if exp.approach == "tradeoff":
         eval_code_name_repair += "_{}_r".format(str(exp.eta))
         eval_code_name_maintenance += "_{}_m".format(str(exp.eta))
+    if exp.approach == "optr" or exp.approach == "optm":
+        eval_code_name_repair += "_r"
+        eval_code_name_maintenance += "_m"
 
     return eval_code_name_repair, eval_code_name_maintenance
 
