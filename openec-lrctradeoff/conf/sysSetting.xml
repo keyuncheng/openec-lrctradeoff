@@ -35,9 +35,9 @@
 <value><ecid>AT_14_10_2_r</ecid><class>AzureLRCTradeoff</class><n>14</n><k>10</k><w>1</w><opt>3</opt><param>2,2,2,0</param></value>
 <value><ecid>AT_14_10_2_m</ecid><class>AzureLRCTradeoff</class><n>14</n><k>10</k><w>1</w><opt>3</opt><param>2,2,2,1</param></value>
 <value><ecid>AOR_14_10_r</ecid><class>AzureLRCOptR1022</class><n>14</n><k>10</k><w>1</w><opt>3</opt><param>2,2,0</param></value>
-<value><ecid>AOR_14_10_m</ecid><class>AzureLRCOptR1022</class><n>14</n><k>10</k><w>1</w><opt>3</opt><param>2,2,0</param></value>
+<value><ecid>AOR_14_10_m</ecid><class>AzureLRCOptR1022</class><n>14</n><k>10</k><w>1</w><opt>3</opt><param>2,2,1</param></value>
 <value><ecid>AOM_14_10_r</ecid><class>AzureLRCOptM1022</class><n>14</n><k>10</k><w>1</w><opt>3</opt><param>2,2,0</param></value>
-<value><ecid>AOM_14_10_m</ecid><class>AzureLRCOptM1022</class><n>14</n><k>10</k><w>1</w><opt>3</opt><param>2,2,0</param></value>
+<value><ecid>AOM_14_10_m</ecid><class>AzureLRCOptM1022</class><n>14</n><k>10</k><w>1</w><opt>3</opt><param>2,2,1</param></value>
 
 </attribute>
 <attribute><name>offline.pool</name>
