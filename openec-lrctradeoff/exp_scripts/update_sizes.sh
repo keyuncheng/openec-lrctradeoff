@@ -18,6 +18,7 @@ hadoop_home_dir=${home_dir}/hadoop-3.3.4
 echo $hadoop_home_dir
 
 # block size
+sed -i "s%\(</ecid><base>\)[^<]*%\1${block_size}%" ${config_dir}/${config_filename}
 sed -i "s%\(<property><name>dfs.blocksize</name><value>\)[^<]*%\1${block_size}%" ${hadoop_home_dir}/etc/hadoop/hdfs-site.xml
 
 # packet size
