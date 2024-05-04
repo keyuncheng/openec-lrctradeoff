@@ -60,7 +60,7 @@ void AzureLRCOptR1022::Place(vector<vector<int>> &group)
     group[2].push_back(7);
     group[3].push_back(8);
     group[3].push_back(9);
-    group[3].push_back(10);
+    group[3].push_back(11);
     group[4].push_back(12);
     group[4].push_back(13);
 }

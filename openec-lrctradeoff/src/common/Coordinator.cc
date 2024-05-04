@@ -1164,14 +1164,21 @@ void Coordinator::optOfflineDegrade(string lostobj, unsigned int clientIp, Offli
   }
 
   // hack (start): special handling for AzureLRCTradeoff: overwride integrity and availacidx
-  if (ecpolicy->getClassName() == "AzureLRCFlat" || ecpolicy->getClassName() == "AzureLRCTradeoff" || ecpolicy->getClassName() == "AzureLRCOptR1022" || ecpolicy->getClassName() == "AzureLRCOptM1022")
+  
+  string ecClassName = ecpolicy->getClassName();
+  if (ecClassName.find("AzureLRCFlat") != std::string::npos || ecClassName.find("AzureLRCTradeoff") != std::string::npos || ecClassName.find("AzureLRCOptR") != std::string::npos || ecClassName.find("AzureLRCOptM") != std::string::npos)
   {
     // check if it's maintenance
     vector<string> params = ecpolicy->getParams();
-    int approach = atoi(params[3].c_str());
+    int approach = 0;
+    if (ecClassName.find("AzureLRCTradeoff") != std::string::npos) {
+      approach = atoi(params[3].c_str());
+    } else if (ecClassName.find("AzureLRCOptR") != std::string::npos || ecClassName.find("AzureLRCOptM") != std::string::npos) {
+      approach = atoi(params[2].c_str());
+    }
     if (approach == 1)
     {
-      printf("special handling for maintenance for %s (%u, %u)\n", ecpolicy->getClassName().c_str(), ec->_n, ec->_k);
+      printf("special handling for maintenance for %s (%u, %u)\n", ecClassName.c_str(), ec->_n, ec->_k);
 
       vector<vector<int>> group;
       ec->Place(group);
