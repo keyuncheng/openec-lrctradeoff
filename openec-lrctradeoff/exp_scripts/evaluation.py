@@ -24,14 +24,21 @@ def parse_args(cmd_args):
     args = arg_parser.parse_args(cmd_args)
     return args
 
-def exec_cmd(cmd, exec=True):
+def exec_cmd(cmd, exec=True, timeout=None):
     print("Execute Command: {}".format(cmd))
     msg = ""
+    success=False
     if exec == True:
-        return_str, stderr = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).communicate()
-        msg = return_str.decode().strip()
+        with subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE) as p:
+            try:
+                return_str, stderr = p.communicate(timeout=timeout)
+                msg = return_str.decode().strip()
+                success=True
+            except Exception as e:
+                print(e)
+                p.terminate()
         print(msg)
-    return msg
+    return msg, success
 
 class MyConfigParser(configparser.ConfigParser):
     def __init__(self, defaults=None):
@@ -75,10 +82,13 @@ def find_block_id_and_ip(stripe_name, block_id):
     oec_block_name = "/{}_oecobj_{}".format(stripe_name, block_id)
     find_node_ip_and_block_cmd = "hdfs fsck {} -files -blocks -locations | grep Datanode".format(oec_block_name)
     
-    find_ip_result = exec_cmd(find_node_ip_and_block_cmd, exec=True)
-
     node_ip = "undefined_ip"
     block_name = "blk_undefined"
+    
+    find_ip_result, success = exec_cmd(find_node_ip_and_block_cmd, exec=True)
+    if not success:
+        print("Error finding block for stripe_name: {}".format(oec_block_name))
+        return node_ip, block_name
 
     try:
         find_ip_result.index("blk_")
@@ -110,17 +120,23 @@ def delete_node_block(hdfs_dir, node_ip, block_name = "*"):
 
 def check_hdfs_blocks():
     hdfs_check_blocks_cmd="hdfs fsck -list-corruptfileblocks"
-    ret_val = exec_cmd(hdfs_check_blocks_cmd, exec=True)
+    ret_val, success = exec_cmd(hdfs_check_blocks_cmd, exec=True)
     print(ret_val)
 
 
 def read_file_block(user_name, agent_ip, oec_dir, filename, num_runs):
     print("Start to read file {} for {} runs".format(filename, num_runs))
 
+    num_success_reads = 0
+
     read_time_list = []
     for i in range(num_runs):
         read_cmd = "ssh {}@{} \"cd {} && ./OECClient read {} {}\"".format(user_name, agent_ip, oec_dir, "/" + filename, filename)
-        ret_val = exec_cmd(read_cmd, exec=True)
+        ret_val, success = exec_cmd(read_cmd, exec=True, timeout=300)
+
+        if not success:
+            print("Error: timeout reading object {} for the {}-th run".format(filename, i))
+            break
 
         read_time = -1
 
@@ -145,9 +161,15 @@ def read_file_block(user_name, agent_ip, oec_dir, filename, num_runs):
         # else:
         #     read_time = float(ret_val[begin_p:end_p])
 
+        num_success_reads += 1
         read_time_list.append(read_time)
+
         time.sleep(1)
-    return read_time_list
+
+    if num_success_reads == num_runs:
+        return read_time_list, True
+    else:
+        return read_time_list, False
 
 
 def main():
@@ -222,7 +244,8 @@ def main():
     cmd = "cd {} && bash update_configs_dist.sh {} {}".format(exp_script_dir, exp.block_size_byte, exp.pkt_size_byte)
     exec_cmd(cmd, exec=True)
 
-    for block_id in range(exp.eck):
+    block_id = 0
+    while block_id < exp.eck:
     # for block_id in range(1):
         print("Start evaluation for code {} and {} block {}".format(eval_code_name_repair, eval_code_name_maintenance, block_id))
 
@@ -241,7 +264,7 @@ def main():
         input_data_filename = "{}/{}MiB".format(cluster.proj_dir, input_data_size_MiB)
         # generate data block
         cmd = "ssh {}@{} \"test -f {} && echo yes || echo no\"".format(user_name, agent_ip, input_data_filename)
-        ret_val = exec_cmd(cmd, exec=True)
+        ret_val, success = exec_cmd(cmd, exec=True)
         if "yes" in ret_val:
             print("data block exists: {}".format(input_data_filename))
         else:
@@ -280,10 +303,24 @@ def main():
 
         # degraded read file
         read_filename_repair = "{}_{}".format(stripe_name_repair, block_id)
-        read_repair_time_list = read_file_block(user_name, agent_ip, oec_dir, read_filename_repair, exp.num_runs)
+        read_repair_time_list, success = read_file_block(user_name, agent_ip, oec_dir, read_filename_repair, exp.num_runs)
 
+        # if not success, retry this block
+        if not success:
+            # clear cross-rack bandwidth
+            cmd = "cd {} && python3 set_topology_cluster.py -option clear -cr_bw {} -gw_ip {}".format(exp_script_dir, exp.cr_bw_Kbps, cluster.nodes[cluster.gateway_id][0])
+            exec_cmd(cmd, exec=True)
+            continue
+
+        # if not success, retry this block
         read_filename_maintenance = "{}_{}".format(stripe_name_maintenance, block_id)
-        read_maintenance_time_list = read_file_block(user_name, agent_ip, oec_dir, read_filename_maintenance, exp.num_runs)
+        read_maintenance_time_list, success = read_file_block(user_name, agent_ip, oec_dir, read_filename_maintenance, exp.num_runs)
+
+        if not success:
+            # clear cross-rack bandwidth
+            cmd = "cd {} && python3 set_topology_cluster.py -option clear -cr_bw {} -gw_ip {}".format(exp_script_dir, exp.cr_bw_Kbps, cluster.nodes[cluster.gateway_id][0])
+            exec_cmd(cmd, exec=True)
+            continue
 
         # save results
         result_save_folder_repair = "{}/eval_results/{}/".format(cluster.proj_dir, eval_code_name_repair)
@@ -302,13 +339,15 @@ def main():
             f.write(" ".join(str(item) for item in
             read_maintenance_time_list) + "\n")
        
- 
         print("result for code {} block {}: {}".format(eval_code_name_maintenance, block_id, " ".join(str(item) for item in read_maintenance_time_list)))
         print("save {} result in {}".format(eval_code_name_maintenance, result_save_path))
 
         # clear cross-rack bandwidth
         cmd = "cd {} && python3 set_topology_cluster.py -option clear -cr_bw {} -gw_ip {}".format(exp_script_dir, exp.cr_bw_Kbps, cluster.nodes[cluster.gateway_id][0])
         exec_cmd(cmd, exec=True)
+
+        # increment block_id
+        block_id += 1
 
         print("Finished evaluation for code {} and {} block {}".format(eval_code_name_repair, eval_code_name_maintenance, block_id))
 
@@ -317,4 +356,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
