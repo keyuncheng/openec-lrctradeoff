@@ -210,6 +210,10 @@ def main():
 
     print(*cluster.agent_ids)
 
+    # (fix) clear cross-rack bandwidth
+    cmd = "cd {} && python3 set_topology_cluster.py -option clear -cr_bw {} -gw_ip {}".format(exp_script_dir, exp.cr_bw_Kbps, cluster.nodes[cluster.gateway_id][0])
+    exec_cmd(cmd, exec=True)
+
     # set network topology
     cmd = "cd {} && python3 export_topology.py -oec_code_name {} -dn_ids {}".format(exp_script_dir, eval_code_name_repair, ' '.join(str(item) for item in cluster.agent_ids))
     exec_cmd(cmd, exec=True)
@@ -236,7 +240,9 @@ def main():
         input_data_size_MiB = block_size_MiB * exp.eck
         input_data_filename = "{}/{}MiB".format(cluster.proj_dir, input_data_size_MiB)
         # generate data block
-        if os.path.isfile(input_data_filename):
+        cmd = "ssh {}@{} \"test -f {} && echo yes || echo no\"".format(user_name, agent_ip, input_data_filename)
+        ret_val = exec_cmd(cmd, exec=True)
+        if "yes" in ret_val:
             print("data block exists: {}".format(input_data_filename))
         else:
             print("data block not exists: {}; generate".format(input_data_filename))
