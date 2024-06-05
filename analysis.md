@@ -1,3 +1,0 @@
-Optimal Tradeoff-curve
-
-* Optimal
