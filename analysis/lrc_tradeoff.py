@@ -9,7 +9,7 @@ import math
 
 
 def parse_args(cmd_args):
-    arg_parser = argparse.ArgumentParser(description="trade-off between repair cost and maintenance cost for LRC") 
+    arg_parser = argparse.ArgumentParser(description="Trade-off between average degraded-read cost (ARC) and average degraded-read-under-maintenance cost (AMC) for LRC") 
 
     # Input parameters: (k,l,g)
     arg_parser.add_argument("-eck", type=int, required=True, help="eck")
@@ -61,7 +61,7 @@ def main():
         delta_j = -ecg * eta + ecb + 1
 
         # calculate repair cost
-        ARC = delta_j - 1
+        ADC = delta_j - 1
 
         # calculate maintenance cost
         AMC = (ecl - ecg - 1) * (ecg + 1) * ecg / ecb * eta * eta + ecg * ecg * eta + ecb
@@ -71,11 +71,10 @@ def main():
             # print("Handling special case for eta (b % (g+1) != 0")
             delta_j = eta_max
             sigma = delta_j * ecl
-            ARC = delta_j - 1
+            ADC = delta_j - 1
             AMC =  1.0 * (((eta_max - 1) * (ecg + 1)) * (sigma * ecg + delta_j - 1) + ((ecb % (ecg+1)) * (sigma * (ecb % (ecg+1))))) / ecb
 
-        print("eta = {}, ARC = {}, AMC = {}".format(eta, ARC, AMC))
-
+        print("eta = {}, ADC = {}, AMC = {}".format(eta, ADC, AMC))
 
 if __name__ == '__main__':
     main()

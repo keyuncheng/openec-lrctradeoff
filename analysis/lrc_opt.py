@@ -10,14 +10,13 @@ from gurobipy import GRB
 
 
 def parse_args(cmd_args):
-    arg_parser = argparse.ArgumentParser(description="optimal maintenance cost and repair cost for LRC") 
+    arg_parser = argparse.ArgumentParser(description="optimal average degraded-read cost (ADC) and average degraded-read-under-maintenance cost (AMC) for LRC") 
 
     # Input parameters: (k,l,g)
     arg_parser.add_argument("-eck", type=int, required=True, help="eck")
     arg_parser.add_argument("-ecl", type=int, required=True, help="ecl")
     arg_parser.add_argument("-ecg", type=int, required=True, help="ecg")
-    arg_parser.add_argument("-problem", type=str, required=True, help="optimization problem [r/m] (r: optimal repair cost; m: optimal maintenance cost)")
-    
+    arg_parser.add_argument("-problem", type=str, required=True, help="optimization problem [adc/amc] (adc: optimal ADC; amc: optimal AMC)")
     
     args = arg_parser.parse_args(cmd_args)
     return args
@@ -135,8 +134,8 @@ def main():
 
         #####################################################################
 
-        if args.problem == "r":
-            ########### Optimization goal: minimize repair cost #############
+        if args.problem == "adc":
+            ########### Optimization goal: minimize ADC #############
 
             # # I_alpha(): Indicator variable; check whether rack R_i stores any
             # # data block from local group G_j (I_alpha(i,j) = 1 when
@@ -160,9 +159,10 @@ def main():
             for lg_id in range(ecl):
                 model.addConstr(r_cost_lg[lg_id] == ecb * (delta[lg_id] - 1))
             
-            # ARC: average repair cost of the LRC stripe (of all data blocks)
-            ARC = model.addVar(vtype=GRB.CONTINUOUS, name="ARC")
-            model.addConstr(ARC == r_cost_lg.sum('*') / eck)
+            # ADC: average degraded-read cost of the LRC stripe (of all data
+            # blocks)
+            ADC = model.addVar(vtype=GRB.CONTINUOUS, name="ADC")
+            model.addConstr(ADC == r_cost_lg.sum('*') / eck)
 
             # # version 2
             # r_cost = model.addVars(max_num_racks, ecl, vtype=GRB.INTEGER, name="r_cost")
@@ -177,12 +177,12 @@ def main():
             #     for lg_id in range(ecl):
             #         model.addConstr(r_cost_weighted[rack_id, lg_id] == alpha[rack_id, lg_id] * r_cost[rack_id, lg_id])
             
-            # # ARC: average repair cost of the LRC stripe (of all data blocks)
-            # ARC = model.addVar(vtype=GRB.CONTINUOUS, name="ARC")
-            # model.addConstr(ARC == r_cost_weighted.sum('*', '*') / eck)
+            # # ADC: average repair cost of the LRC stripe (of all data blocks)
+            # ADC = model.addVar(vtype=GRB.CONTINUOUS, name="ADC")
+            # model.addConstr(ADC == r_cost_weighted.sum('*', '*') / eck)
 
             # Set objective
-            model.setObjective(ARC, GRB.MINIMIZE)
+            model.setObjective(ADC, GRB.MINIMIZE)
 
             # Start from an initial solution (combined locality) Reminded
             # about the symmetric constraint that the number of blocks per
@@ -223,8 +223,8 @@ def main():
                     cur_rack_id += 1
                 
             #####################################################################
-        elif args.problem == "m": # TODO: fix
-            ######### Optimization goal: minimize maintenance cost ###########
+        elif args.problem == "amc":
+            ######### Optimization goal: minimize AMC ###########
 
             # Definition of sigma (version 1)
             # I_sigma(i): Indicator variable; check whether rack R_i stores
