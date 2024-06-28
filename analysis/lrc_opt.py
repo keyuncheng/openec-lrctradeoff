@@ -339,6 +339,7 @@ def main():
         
         model.setParam('MIPFocus', 3) # more focus on proving the objective bound
         model.setParam('Heuristics', 0) # only focus on proving the objective bound, instead of finding multiple feasible solutions
+        model.setParam('NonConvex', 2) # Non-convex model
 
         ######################################################################
 

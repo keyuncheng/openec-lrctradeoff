@@ -172,16 +172,16 @@ To obtain the optimal data placement schemes for Azure-LRC(10,2,2), please run t
 
 ```
 // Opt-R
-python3 lrc_opt.py 10 2 2 adc
+python3 lrc_opt.py -eck 10 -ecl 2 -ecg 2 -problem adc
 // Opt-M
-python3 lrc_opt.py 10 2 2 amc
+python3 lrc_opt.py -eck 10 -ecl 2 -ecg 2 -problem amc
 ```
 
 To calculate the ADC and AMC for our trade-off data placement schemes for
 Azure-LRC(10,2,2), please run the following command:
 
 ```
-python3 lrc_tradeoff.py 10 2 2
+python3 lrc_tradeoff.py -eck 10 -ecl 2 -ecg 2
 ```
 
 ### Run Prototype
