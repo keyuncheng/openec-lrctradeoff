@@ -9,32 +9,33 @@
 
 using namespace std;
 
-class FSObjInputStream {
-  private:
-    Config* _conf;
-    string _objname;
-    BlockingQueue<OECDataPacket*>* _queue;
-    int _dataPktNum;
-    bool _exist; 
-    int _objbytes;
-    int _offset;
+class FSObjInputStream
+{
+private:
+  Config *_conf;
+  string _objname;
+  BlockingQueue<OECDataPacket *> *_queue;
+  int _dataPktNum;
+  bool _exist;
+  int _objbytes;
+  int _offset;
 
-    UnderFS* _underfs;
-    UnderFile* _underfile;
+  UnderFS *_underfs;
+  UnderFile *_underfile;
 
-  public:
-    FSObjInputStream(Config* conf, string objname, UnderFS* fs);
-    ~FSObjInputStream();
-    void readObj();
-    void readObj(int slicesize, int unitIdx);
-    void readObj(int slicesize);
-    void readObj(int w, vector<int> list, int slicesize);
-    void readObjOptimized(int w, vector<int> list, int slicesize); // Keyun: optimized for reading consecutive sub-packets
-    OECDataPacket* dequeue();
-    bool exist();
-    bool hasNext();
-    int pread(long objoffset, char* buffer, int buflen);
-    BlockingQueue<OECDataPacket*>* getQueue();
+public:
+  FSObjInputStream(Config *conf, string objname, UnderFS *fs);
+  ~FSObjInputStream();
+  void readObj();
+  void readObj(int slicesize, int unitIdx);
+  void readObj(int slicesize);
+  void readObj(int w, vector<int> list, int slicesize);
+  void readObjOptimized(int w, vector<int> list, int slicesize); // optimized for reading consecutive sub-packets
+  OECDataPacket *dequeue();
+  bool exist();
+  bool hasNext();
+  int pread(long objoffset, char *buffer, int buflen);
+  BlockingQueue<OECDataPacket *> *getQueue();
 };
 
 #endif

@@ -83,8 +83,6 @@ void Coordinator::doProcess()
       case 12:
         coorBenchmark(coorCmd);
         break;
-
-      // Keyun: for ET
       case 21:
         getHDFSMeta(coorCmd);
         break;
@@ -182,7 +180,7 @@ void Coordinator::registerOnlineEC(unsigned int clientIp, string filename, strin
 
   ////////////////////////////////////////////////
 
-  // Keyun: hacked version to support online degraded read for single block repair experiments (with the workflow of offline degraded read)
+  // hacked version to support online degraded read for single block repair experiments (with the workflow of offline degraded read)
 
   // (1). add poolentry of the stripe
   string pool_suffix = "_pool";
@@ -906,7 +904,7 @@ void Coordinator::getFileMeta(CoorCommand *coorCmd)
     memcpy(filemeta + metaoff, (char *)&tmpnum, 4);
     metaoff += 4;
 
-    // Keyun: actually we should also append the object lists (previously didn't)
+    // actually we should also append the object lists (previously didn't)
     for (auto objname : objlist)
     {
       int len = objname.size();
@@ -1077,7 +1075,7 @@ void Coordinator::offlineDegradedInst(CoorCommand *coorCmd)
   SSEntry *ssentry = _stripeStore->getEntryFromObj(lostobj);
   string ecpoolid = ssentry->getEcidpool();
 
-  // Keyun: slight modification to support offline degraded read blocks with online encoding
+  // slight modification to support offline degraded read blocks with online encoding
   string pool_suffix = "_pool";
   if (ecpoolid.find(pool_suffix) == std::string::npos)
   {
@@ -1164,16 +1162,19 @@ void Coordinator::optOfflineDegrade(string lostobj, unsigned int clientIp, Offli
   }
 
   // hack (start): special handling for AzureLRCTradeoff: overwride integrity and availacidx
-  
+
   string ecClassName = ecpolicy->getClassName();
   if (ecClassName.find("AzureLRCFlat") != std::string::npos || ecClassName.find("AzureLRCTradeoff") != std::string::npos || ecClassName.find("AzureLRCOptR") != std::string::npos || ecClassName.find("AzureLRCOptM") != std::string::npos)
   {
     // check if it's maintenance
     vector<string> params = ecpolicy->getParams();
     int approach = 0;
-    if (ecClassName.find("AzureLRCTradeoff") != std::string::npos) {
+    if (ecClassName.find("AzureLRCTradeoff") != std::string::npos)
+    {
       approach = atoi(params[3].c_str());
-    } else if (ecClassName.find("AzureLRCOptR") != std::string::npos || ecClassName.find("AzureLRCOptM") != std::string::npos) {
+    }
+    else if (ecClassName.find("AzureLRCOptR") != std::string::npos || ecClassName.find("AzureLRCOptM") != std::string::npos)
+    {
       approach = atoi(params[2].c_str());
     }
     if (approach == 1)
@@ -1451,7 +1452,7 @@ void Coordinator::nonOptOfflineDegrade(string lostobj, unsigned int clientIp, Of
   {
     int sidx = leaves[i] / ecw;
 
-    // Keyun (for shortening): skip loading shortening symbols
+    // (for shortening): skip loading shortening symbols
     if (sidx >= ecn)
     {
       continue;
@@ -1984,7 +1985,7 @@ void Coordinator::recoveryOnlineHCIP(string lostobj)
 
     printf("before fixed IP: %d, %s\n", cidx, RedisUtil::ip2Str(curip).c_str());
 
-    // Keyun: it's not a symbol to recover, fix the ip to the failed node
+    // it's not a symbol to recover, fix the ip to the failed node
     if (find(toreccidx.begin(), toreccidx.end(), cidx) == toreccidx.end() &&
         find(availcidx.begin(), availcidx.end(), cidx) == availcidx.end())
     {
@@ -2475,7 +2476,7 @@ void Coordinator::recoveryOfflineHCIP(string lostobj)
 
     printf("before fixed IP: %d, %s\n", cidx, RedisUtil::ip2Str(curip).c_str());
 
-    // Keyun: it's not a symbol to recover, fix the ip to the failed node
+    // it's not a symbol to recover, fix the ip to the failed node
     if (find(toreccidx.begin(), toreccidx.end(), cidx) == toreccidx.end() &&
         find(availcidx.begin(), availcidx.end(), cidx) == availcidx.end())
     {

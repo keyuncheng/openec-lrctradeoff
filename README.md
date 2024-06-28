@@ -190,8 +190,8 @@ Below is an example of running degraded read operations in both regular mode
 and maintenance mode for Azure-LRC(10,2,2) for our trade-off data placement
 with eta=1 (i.e., Trade-off-1).
 
-For your convenience, we provide a script ```exp_scripts/evaluation.py``` to
-automate the testbed experiments. The experiment configurations are listed in
+We also provide a script ```exp_scripts/evaluation.py``` for
+testbed experiments. The experiment configurations are listed in
 ```exp_scripts/eval_settings.ini```.
 
 #### Configure Rack Topology

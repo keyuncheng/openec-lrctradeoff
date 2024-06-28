@@ -65,7 +65,6 @@ class StripeStore {
     ofstream _poolStore;
     mutex _lockPoolStore;
     
-    // for ET
     unordered_map<string, string> _hdfsfile2block;
     
   public:
@@ -119,7 +118,6 @@ class StripeStore {
     void backupEntry(string entrystr);
     void backupPoolStripe(string stripename);
 
-    // for ET
     void setHDFSMeta(string hdfsfile, string block);
     string getHDFSBlkName(string hdfsfile);
 

@@ -41,10 +41,13 @@ int main(int argc, char **argv)
     int failed_id = atoi(argv[7]);
 
     string ecid = "AT_" + to_string(ecn) + "_" + to_string(eck) + "_" + to_string(eceta);
-    
-    if (mode == "repair") {
+
+    if (mode == "repair")
+    {
         ecid = ecid + "_r";
-    } else if (mode == "maintenance") {
+    }
+    else if (mode == "maintenance")
+    {
         ecid = ecid + "_m";
     }
 
@@ -118,7 +121,7 @@ int main(int argc, char **argv)
         {
             int child = children[bufIdx];
 
-            // Keyun: support shortening
+            // support shortening
             if (child >= n * w && encodeBufMap.find(child) == encodeBufMap.end())
             {
                 shortening_free_list.push_back(child);
@@ -326,7 +329,7 @@ int main(int argc, char **argv)
         {
             int child = children[bufIdx];
 
-            // Keyun: support shortening
+            // support shortening
             if (child >= n * w && decodeBufMap.find(child) == decodeBufMap.end())
             {
                 shortening_free_list.push_back(child);

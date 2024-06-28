@@ -34,7 +34,6 @@ CoorCommand::CoorCommand(char* reqStr) {
     case 9: resolveType9(); break;
     case 11: resolveType11(); break;
     case 12: resolveType12(); break;
-    // ET
     case 21: resolveType21(); break;
     case 22: resolveType22(); break;
     default: break;

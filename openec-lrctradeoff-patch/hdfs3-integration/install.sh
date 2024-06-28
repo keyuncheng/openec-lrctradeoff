@@ -31,7 +31,7 @@ cp src/hdfs.c  $HADOOP_SRC_DIR/hadoop-hdfs-project/hadoop-hdfs-native-client/src
 cp src/DFSInputStream.java $HADOOP_SRC_DIR/hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/
 cp src/pom.xml $HADOOP_SRC_DIR/
 
-# 3.1 (Keyun) add single block repair time
+# 3.1 add single block repair time
 cp src/StripedBlockReconstructor.java $HADOOP_SRC_DIR/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/erasurecode/
 
 # 4. prepare pom for hadoop-hdfs-client package

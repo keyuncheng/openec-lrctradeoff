@@ -1,10 +1,11 @@
 #include "OECOutputStream.hh"
 
-OECOutputStream::OECOutputStream(Config* conf,
+OECOutputStream::OECOutputStream(Config *conf,
                                  string filename,
                                  string ecidpool,
                                  string mode,
-                                 int filesizeMB) {
+                                 int filesizeMB)
+{
   _conf = conf;
   _filename = filename;
   _ecidpool = ecidpool;
@@ -16,15 +17,17 @@ OECOutputStream::OECOutputStream(Config* conf,
   init();
 }
 
-OECOutputStream::~OECOutputStream() {
+OECOutputStream::~OECOutputStream()
+{
   redisFree(_localCtx);
 }
 
-void OECOutputStream::init() {
+void OECOutputStream::init()
+{
   /*
    *  tell local OECAgent that I want to write a file of size
    */
-  AGCommand* agCmd = new AGCommand();  
+  AGCommand *agCmd = new AGCommand();
   agCmd->buildType0(0, _filename, _ecidpool, _mode, _filesizeMB);
   agCmd->sendTo(_conf->_localIp);
 
@@ -32,7 +35,8 @@ void OECOutputStream::init() {
   delete agCmd;
 }
 
-void OECOutputStream::write(char* buf, int len) {
+void OECOutputStream::write(char *buf, int len)
+{
   /*
    * OECOutputStream write packet to local redis in this format
    * |key = filename|
@@ -42,34 +46,34 @@ void OECOutputStream::write(char* buf, int len) {
   // pipelining
   redisAppendCommand(_localCtx, "RPUSH %s %b", key.c_str(), buf, len);
 
-  // Keyun (Aug 23): fixed for large file write - moving freeReplyObject for write
-  redisReply* rReply;
-  redisGetReply(_localCtx, (void**)&rReply);
+  // fixed for large file write - moving freeReplyObject for write
+  redisReply *rReply;
+  redisGetReply(_localCtx, (void **)&rReply);
   freeReplyObject(rReply);
-
 }
 
-void OECOutputStream::close() {
+void OECOutputStream::close()
+{
   struct timeval time1, time2, time3;
   gettimeofday(&time1, NULL);
- 
-  redisReply* rReply;
 
-  // // Keyun (Aug 23): fixed for large file write - moving freeReplyObject for write
-  // for (int i=_replyid; i<_pktid; i++) { 
+  redisReply *rReply;
+
+  // // fixed for large file write - moving freeReplyObject for write
+  // for (int i=_replyid; i<_pktid; i++) {
   //   redisGetReply(_localCtx, (void**)&rReply);
   //   freeReplyObject(rReply);
 
   //   printf("received reply for pkt %d / %d\n", i, _pktid);
   // }
- 
+
   gettimeofday(&time2, NULL);
-//  cout << "OECOutputStream.close.wait for all reply time = " << RedisUtil::duration(time1, time2) << endl; 
- 
+  //  cout << "OECOutputStream.close.wait for all reply time = " << RedisUtil::duration(time1, time2) << endl;
+
   // wait for finish
-  string wkey = "writefinish:"+_filename;
-  rReply = (redisReply*)redisCommand(_localCtx, "blpop %s 0", wkey.c_str());
+  string wkey = "writefinish:" + _filename;
+  rReply = (redisReply *)redisCommand(_localCtx, "blpop %s 0", wkey.c_str());
   freeReplyObject(rReply);
   gettimeofday(&time3, NULL);
-//  cout << "OECOutputStream.close.wait for finish flag time = " << RedisUtil::duration(time2, time3) << endl;
+  //  cout << "OECOutputStream.close.wait for finish flag time = " << RedisUtil::duration(time2, time3) << endl;
 }
