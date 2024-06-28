@@ -45,7 +45,7 @@ The simulation source code is in ```analysis/```.
 
 The source code patch for OpenEC is in ```openec-lrctradeoff-patch/```. The
 ECDAG implementation of data placement schemes is in
-```openec-lrctradeoff/openec-lrctradeoff-patch/src/ec/```.
+```openec-lrctradeoff-patch/src/ec/```.
 
 ```
 - src/ec/AzureLRCFlat.* // Flat data placement
