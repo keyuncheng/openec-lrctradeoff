@@ -4,9 +4,9 @@ This repository contains the implementation of our configurable data placement
 scheme for LRC-coded storage that operates along the trade-off between repair
 and maintenance operations.
 
-## Paper
+## Publications
 
-Please refer to our SRDS 2024 paper for more details.
+Keyun Cheng, Si Wu, Xiaolu Li, and Patrick P. C. Lee. "Harmonizing Repair and Maintenance in LRC-Coded Storage." SRDS 2024.
 
 ## Overview
 
